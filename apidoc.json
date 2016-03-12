@@ -1,0 +1,8 @@
+{
+  "name" : "pizzaCmsApi",
+  "version": "1.0.0",
+  "title": "pizzaCmsApi",
+  "description": "pizzaCmsApi  power bu golang neo",
+  "url": "http://192.168.1.134:3000/v1",
+  "sampleUrl": "http://192.168.1.134:3000/v1"
+}
