@@ -4,6 +4,7 @@ import (
 	// "encoding/json"
 	"github.com/ivpusic/neo"
 	"pizzaCmsApi/model"
+	"time"
 	"pizzaCmsApi/tools"
 )
 
@@ -40,21 +41,14 @@ func ArticleGet(ctx *neo.Ctx) (int, error) {
  */
 func ArticleUpdate(ctx *neo.Ctx) (int, error) {
 	var article model.Article
-	// err := ctx.Req.JsonBody(&article)
-	// if err != nil {
-	//   	return 200, ctx.Res.Json(model.ApiJson{State: false, Msg: err.Error() })
-	// }
-
-	// b, err := json.Marshal(article)
-	// if err != nil {
-	// 	log.Printf("json err:", err)
-	// } else {
-	// 	log.Printf(string(b))
-	// }
-
-	id := tools.ParseInt(ctx.Req.Params.Get("id"), 0)
-	article.ID = id
-	article.Title = ctx.Req.FormValue("title")
+	err := ctx.Req.JsonBody(&article)
+	if err != nil {
+	   	return 200, ctx.Res.Json(model.ApiJson{State: false, Msg: err.Error() })
+	}
+  err1 := validate.Struct(article)
+	if err1 != nil {
+		return 200, ctx.Res.Json(`{"state": false, "msg": ` + err1.Error() + `}`)
+	}
 	return 200, ctx.Res.Json(model.ArticleUpdate(article))
 }
 
@@ -74,10 +68,15 @@ func ArticleUpdate(ctx *neo.Ctx) (int, error) {
  */
 func ArticleCreate(ctx *neo.Ctx) (int, error) {
 	var article model.Article
-
-	article.Title = ctx.Req.FormValue("title")
-	article.Brief = ctx.Req.FormValue("brief")
-	article.Content = ctx.Req.FormValue("content")
+	err := ctx.Req.JsonBody(&article)
+	if err != nil {
+			return 200, ctx.Res.Json(model.ApiJson{State: false, Msg: err.Error() })
+	}
+	err1 := validate.Struct(article)
+	if err1 != nil {
+		return 200, ctx.Res.Json(`{"state": false, "msg": ` + err1.Error() + `}`)
+	}
+	article.Createtime = time.Now().Unix()
 	return 200, ctx.Res.Json(model.ArticleCreate(article))
 }
 

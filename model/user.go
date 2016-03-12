@@ -6,8 +6,10 @@ import (
 type User struct {
 	ID       int    `json:"id" gorm:"primary_key;AUTO_INCREMENT"`
 	Username string `json:"username" sql:"type:varchar(30);default:''" validate:"required,max=30,min=4"`
+	Nickname string `json:"nickname" sql:"type:varchar(30);default:''" validate:"required,max=30,min=2"`
 	Password string `json:"password" sql:"size:100;default:''" validate:"required,max=100,min=10"`
 	State    int    `json:"state" sql:"default:0" validate:"gte=-1,lte=3"`
+	Salt string `json:"salt"`
 }
 
 // func init() {
@@ -26,7 +28,7 @@ func (u User) TableName() string {
  */
 func UserGet(id int) ApiJson {
 	var user User
-	DB.First(&user, id)
+	DB.Select("id,username,state").First(&user, id)
 	return ApiJson{State: true, Msg: user}
 }
 
@@ -36,9 +38,9 @@ func UserGet(id int) ApiJson {
  * @param  {[type]}       username string [description]
  * @param  {[type]}       password string [description]
  */
-func UserCheckLogin(username string, password string) User {
+func UserCheckLogin(username string) User {
 	var user User
-	DB.Where("username =  ? and password = ?", username, password).First(&user)
+	DB.Where("username =  ?", username).First(&user)
 	return user
 }
 

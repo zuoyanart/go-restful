@@ -78,18 +78,6 @@ func UserGetByPath(ctx *neo.Ctx) (int, error) {
  */
 func UserUpdateName(ctx *neo.Ctx) (int, error) {
 	var user model.User
-	// err := ctx.Req.JsonBody(&user)
-	// if err != nil {
-	//   	return 200, ctx.Res.Json(model.ApiJson{State: false, Msg: err.Error() })
-	// }
-
-	// b, err := json.Marshal(user)
-	// if err != nil {
-	// 	log.Printf("json err:", err)
-	// } else {
-	// 	log.Printf(string(b))
-	// }
-
 	id := tools.ParseInt(ctx.Req.Params.Get("id"), 0)
 	user.ID = id
 	user.Username = ctx.Req.FormValue("username")
@@ -105,19 +93,20 @@ func UserUpdateName(ctx *neo.Ctx) (int, error) {
 * @apiSampleRequest /user/
 * @apiParam {string} username 用户名
 * @apiParam {string} password 密码
-* @apiSuccess {bool} state 状态
 * @apiSuccess {String} msg 消息
 * @apiPermission admin
  */
 func UserCreate(ctx *neo.Ctx) (int, error) {
-	var user model.User
-
-	user.Username = ctx.Req.FormValue("username")
-	user.Password = ctx.Req.FormValue("password")
-	user.State = 3
-	err := validate.Struct(user)
+var user model.User
+	err := ctx.Req.JsonBody(&user)
 	if err != nil {
-		return 200, ctx.Res.Json(model.ApiJson{State: false, Msg: err.Error()})
+			return 200, ctx.Res.Json(model.ApiJson{State: false, Msg: err.Error() })
+	}
+	user.Salt = tools.GetRandomString(5)
+	user.Password = tools.MD5(user.Password + user.Salt)
+	err1 := validate.Struct(user)
+	if err1 != nil {
+		return 200, ctx.Res.Json(`{"state": false, "msg": ` + err1.Error() + `}`)
 	}
 	return 200, ctx.Res.Json(model.UserCreate(user))
 }

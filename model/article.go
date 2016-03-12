@@ -1,8 +1,8 @@
 package model
 
 import (
-// "github.com/jinzhu/gorm"
-
+	// "github.com/jinzhu/gorm"
+	"pizzaCmsApi/tools"
 )
 
 type Article struct {
@@ -14,7 +14,7 @@ type Article struct {
 	Nodeid     int    `json:"nodeid" sql:"default:0"`
 	Count      int    `json:"count" sql:"default:0"`
 	Reco       int    `json:"reco" sql:"default:0"`
-	Createtime string `json:"createtime"`
+	Createtime int64    `json:"createtime"`
 	Uid        int    `json:"uid" sql:"default:0"`
 	Pass       int    `json:"pass" sql:"default:0"`
 	Source     string `json:"source" sql:"type:varchar(100);default:''"`
@@ -52,7 +52,7 @@ func ArticleGet(id int) ApiJson {
  * @param  {[type]}   article Article [description]
  */
 func ArticleUpdate(article Article) ApiJson {
-	err := DB.Model(&article).UpdateColumns(Article{Title: article.Title, Timg: article.Timg, Content: article.Content, Brief: article.Brief, Nodeid: article.Nodeid, Reco: article.Reco, Pass: article.Pass, Source: article.Source, Tags: article.Tags, Link: article.Link}).Error
+	err := DB.Model(&article).UpdateColumns(map[string]interface{}{"title": article.Title, "timg": article.Timg, "content": article.Content, "brief": article.Brief, "nodeid": article.Nodeid, "reco": article.Reco, "pass": article.Pass, "source": article.Source, "tags": article.Tags, "Link": article.Link}).Error
 	if err != nil {
 		return ApiJson{State: false, Msg: err}
 	}
@@ -81,7 +81,7 @@ func ArticlePage(kw string, nodeid int, cp int, mp int) ApiJson {
 	var count int
 	// var param []interface{}
 	// param=append("%"+kw+"%", nodeid, mp, (cp-1)*mp)
-	DB.Raw("select a.*,b.`name` as nodename,c.username from pz_article as a,pz_node as b,pz_user as c where a.nodeid = b.id and a.uid = c.id and a.title like ? and a.nodeid = ?  limit ? offset ?", "%"+kw+"%", nodeid, mp, (cp-1)*mp).Scan(&articles)
+	DB.Raw("select a.*,b.`name` as nodename,c.username from pz_article as a,pz_node as b,pz_user as c where a.nodeid = b.id and a.uid = c.id and a.title like ? and b.nodepath like ?  limit ? offset ?", "%"+kw+"%", "%,"+tools.ParseString(nodeid)+",%", mp, (cp-1)*mp).Scan(&articles)
 
 	return ApiJson{State: true, Msg: articles, Count: count}
 }
