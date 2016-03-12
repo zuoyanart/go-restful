@@ -4,12 +4,12 @@ import ()
 
 type Node struct {
 	ID       int    `json:"id" gorm:"primary_key;AUTO_INCREMENT"`
-	Pid      int    `json:"pid" sql:"default:0" validate:"max=1000,min=0"`
-	Name     string `json:"name" sql:"type:varchar(50);default:''" validate:"max=40,min=1"`
+	Pid      int    `json:"pid" sql:"default:0" validate:"required,max=1000,min=1"`
+	Name     string `json:"name" sql:"type:varchar(50);default:''" validate:"required,max=40,min=1"`
 	Brief    string `json:"brief" sql:"type:varchar(255);default:''"`
-	Nodepath string `json:"nodepath" sql:"type:varchar(255);default:''"`
-	Link     string `json:"link" sql:"type:varchar(100);default:''" validate:"max=100"`
-	Weight   int    `json:"weight" sql:"default:0" validate:"max=3000"`
+	Nodepath string `json:"nodepath" sql:"type:varchar(255);default:''" validate:"required,max=100,min=4"`
+	Link     string `json:"link" sql:"type:varchar(100);default:''" validate:"required,max=100,min=4"`
+	Weight   int    `json:"weight" sql:"default:0" validate:"required,numeric,max=3000,min=0"`
 }
 
 // func init() {
@@ -38,7 +38,7 @@ func NodeGet(id int) Node {
  * @param  {[type]}   node Node [description]
  */
 func NodeUpdate(node Node) ApiJson {
-	err := DB.Model(&node).UpdateColumns(map[string]interface{}{"name": node.Name, "brief": node.Brief, "link": node.Link, "weight": node.Weight}).Error
+	err := DB.Model(&node).UpdateColumns(Node{Name: node.Name, Brief: node.Brief, Link: node.Link, Weight: node.Weight}).Error
 	if err != nil {
 		return ApiJson{State: false, Msg: err}
 	}
@@ -77,15 +77,6 @@ func NodeCreate(node Node) int {
  */
 func NodePage(pid int) ApiJson {
 	var nodes []Node
-	DB.Where("pid = ?", pid).Order("weight desc").Order("id asc").Find(&nodes)
-	return ApiJson{State: true, Msg: nodes}
-}
-/**
- * 获取所有的node节点列表
- * @method NodePageAll
- */
-func NodePageAll() ApiJson {
-	var nodes []Node
-	DB.Select("id, name").Find(&nodes)
+	DB.Where("pid = ?", pid).Find(&nodes)
 	return ApiJson{State: true, Msg: nodes}
 }
