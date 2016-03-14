@@ -85,3 +85,31 @@ func ArticlePage(kw string, nodeid int, cp int, mp int) ApiJson {
 
 	return ApiJson{State: true, Msg: articles, Count: count}
 }
+
+/**
+ * 删除文章
+ * @method UserArticle
+ * @param  {[type]} ids int[] [description]
+ */
+func ArticleDele(ids []int) ApiJson {
+	err := DB.Where("id in (?) ", ids).Delete(Article{}).Error
+	if err != nil {
+		return ApiJson{State: false, Msg: err.Error()}
+	} else {
+		return ApiJson{State: true}
+	}
+}
+
+/**
+ * 审核文章
+ * @method ArticlePass
+ * @param  {[type]} ids int[] [description]
+ */
+func ArticlePass(ids []int, pass int) ApiJson {
+	err := DB.Model(Article{}).Where("id in (?) ", ids).UpdateColumns(map[string]interface{}{"pass": pass}).Error
+	if err != nil {
+		return ApiJson{State: false, Msg: err.Error()}
+	} else {
+		return ApiJson{State: true}
+	}
+}

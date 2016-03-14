@@ -6,10 +6,11 @@ import (
 	"pizzaCmsApi/logic"
 	"pizzaCmsApi/model"
 	"pizzaCmsApi/tools"
+	"strings"
 )
 
 /**
- * @api {get} /user?id=:id 获取用户信息
+ * @api {get} /user?id=:id get user
  * @apiName 获取用户信息
  * @apiGroup user
  * @apiVersion 1.0.0
@@ -25,7 +26,7 @@ func UserGet(ctx *neo.Ctx) (int, error) {
 }
 
 /**
- * @api {post} /user/login 判断用户是否登录
+ * @api {post} /user/login user login
  * @apiName 判断用户是否登录
  * @apiGroup user
  * @apiVersion 1.0.0
@@ -48,7 +49,7 @@ func UserCheckLogin(ctx *neo.Ctx) (int, error) {
 }
 
 /**
- * @api {get} /user/:id 获取用户信息
+ * @api {get} /user/:id get user
  * @apiName 获取用户信息by path
  * @apiGroup user
  * @apiVersion 1.0.0
@@ -64,33 +65,42 @@ func UserGetByPath(ctx *neo.Ctx) (int, error) {
 }
 
 /**
-* @api {PUT} /user/:id 更新user信息
+* @api {PUT} /user update user info
 * @apiName 更新user信息
 * @apiGroup user
 * @apiVersion 1.0.0
-* @apiDescription 后台管理员更新用户信息
-* @apiSampleRequest /user/:id
+* @apiDescription 后台管理员更新用户信息，如果传入密码，则更新密码，如果不传，则不更新
+* @apiSampleRequest /user
 * @apiParam {string} username 用户名
+* @apiParam {string} nickname 昵称
+* @apiParam {string} password 密码
 * @apiParam {int} id 用户的id
 * @apiSuccess {bool} state 状态
 * @apiSuccess {String} msg 消息
 * @apiPermission admin
  */
-func UserUpdateName(ctx *neo.Ctx) (int, error) {
+func UserUpdate(ctx *neo.Ctx) (int, error) {
 	var user model.User
-	id := tools.ParseInt(ctx.Req.Params.Get("id"), 0)
-	user.ID = id
-	user.Username = ctx.Req.FormValue("username")
-	return 200, ctx.Res.Json(model.UserUpdateName(user))
+	err := ctx.Req.JsonBody(&user)
+	if err != nil {
+			return 200, ctx.Res.Json(model.ApiJson{State: false, Msg: err.Error() })
+	} else {
+		err1 := validate.Struct(user)
+		if err1!= nil {
+			return 200, ctx.Res.Json(model.ApiJson{State: false, Msg: err1.Error() })
+		}
+		return 200, ctx.Res.Json(model.UserUpdate(user))
+	}
+
 }
 
 /**
-* @api {post} /user/ 创建user信息1
+* @api {post} /user create user
 * @apiName 创建user信息1
 * @apiGroup user
 * @apiVersion 1.0.0
 * @apiDescription 创建用户信息
-* @apiSampleRequest /user/
+* @apiSampleRequest /user
 * @apiParam {string} username 用户名
 * @apiParam {string} password 密码
 * @apiSuccess {String} msg 消息
@@ -102,8 +112,6 @@ var user model.User
 	if err != nil {
 			return 200, ctx.Res.Json(model.ApiJson{State: false, Msg: err.Error() })
 	}
-	user.Salt = tools.GetRandomString(5)
-	user.Password = tools.MD5(user.Password + user.Salt)
 	err1 := validate.Struct(user)
 	if err1 != nil {
 		return 200, ctx.Res.Json(`{"state": false, "msg": ` + err1.Error() + `}`)
@@ -131,4 +139,25 @@ func UserPage(ctx *neo.Ctx) (int, error) {
 	kw := ctx.Req.FormValue("kw")
 
 	return 200, ctx.Res.Json(model.UserPage(kw, cp, mp))
+}
+
+/**
+* @api {delete} /user delete User
+* @apiName delete user
+* @apiGroup user
+* @apiVersion 1.0.0
+* @apiDescription delete user by ids[]
+* @apiSampleRequest /user
+* @apiParam {string} id 用户id
+* @apiSuccess {bool} state 状态
+* @apiSuccess {String} msg 消息
+* @apiPermission admin
+ */
+func UserDele(ctx *neo.Ctx) (int, error) {
+	ids := ctx.Req.FormValue("id")
+	if strings.Index("," + ids + ",", ",1,") == -1 {
+			return 200, ctx.Res.Json(logic.UserDele(ids))
+	} else {
+			return 200, ctx.Res.Json(`{"state": false, "msg": "root is not del"}`)
+	}
 }

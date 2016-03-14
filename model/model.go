@@ -12,7 +12,7 @@ var (
 
 func init() {
 	var err error
-	DB, err = gorm.Open("mysql", "root:huabinglan@@227@(192.168.1.117:3306)/pizzaCms??charset=utf8&parseTime=True&loc=Local")
+	DB, err = gorm.Open("mysql", "root:huabinglan@@227@(192.168.1.117:3306)/pizzaCms?charset=utf8&parseTime=True&loc=Local")
 	if err != nil {
 		panic(fmt.Sprintf("No error should happen when connecting to  database, but got err=%+v", err))
 	}

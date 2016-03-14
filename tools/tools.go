@@ -71,7 +71,7 @@ func StructToString( data interface{}) (string) {
 
 //生成随机字符串
 func GetRandomString(n int) string{
-	const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ~!@#$%^&*()+"
+	const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ~!@#$%^&*()+[]{}/<>;:=.,?"
 	 b := make([]byte, n)
 	 	for i := range b {
 	 		b[i] = letterBytes[rand.Int63()%int64(len(letterBytes))]

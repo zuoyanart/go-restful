@@ -1,15 +1,16 @@
 package model
 
 import (
+	"pizzaCmsApi/tools"
 )
 
 type User struct {
-	ID       int    `json:"id" gorm:"primary_key;AUTO_INCREMENT"`
+	ID       int    `json:"id" gorm:"primary_key;AUTO_INCREMENT" `
 	Username string `json:"username" sql:"type:varchar(30);default:''" validate:"required,max=30,min=4"`
 	Nickname string `json:"nickname" sql:"type:varchar(30);default:''" validate:"required,max=30,min=2"`
-	Password string `json:"password" sql:"size:100;default:''" validate:"required,max=100,min=10"`
+	Password string `json:"password" sql:"size:100;default:''" validate:"omitempty,max=25,min=6"`
 	State    int    `json:"state" sql:"default:0" validate:"gte=-1,lte=3"`
-	Salt string `json:"salt"`
+	Salt     string `json:"salt"`
 }
 
 // func init() {
@@ -28,7 +29,7 @@ func (u User) TableName() string {
  */
 func UserGet(id int) ApiJson {
 	var user User
-	DB.Select("id,username,state").First(&user, id)
+	DB.Select("id,username,nickname,state").First(&user, id)
 	return ApiJson{State: true, Msg: user}
 }
 
@@ -49,8 +50,14 @@ func UserCheckLogin(username string) User {
  * @method UserUpdate
  * @param  {[type]}   user User [description]
  */
-func UserUpdateName(user User) ApiJson {
-	err := DB.Model(&user).UpdateColumns(User{Username: user.Username}).Error
+func UserUpdate(user User) ApiJson {
+	var err error
+	if user.Password == "" {
+		err = DB.Model(&user).UpdateColumns(map[string]interface{}{"Username": user.Username, "nickname": user.Nickname}).Error
+	} else {
+		var salt = tools.GetRandomString(10)
+		err = DB.Model(&user).UpdateColumns(map[string]interface{}{"Username": user.Username, "Nickname": user.Nickname, "Password": tools.MD5(user.Password + salt), "salt": salt}).Error
+	}
 	if err != nil {
 		return ApiJson{State: false, Msg: err}
 	}
@@ -63,6 +70,9 @@ func UserUpdateName(user User) ApiJson {
  * @param  {[type]}   user User [description]
  */
 func UserCreate(user User) ApiJson {
+	var salt = tools.GetRandomString(10)
+	user.Password = tools.MD5(user.Password + salt)
+	user.Salt = salt
 	DB.Save(&user)
 	return ApiJson{State: true, Msg: user.ID}
 }
@@ -79,4 +89,17 @@ func UserPage(kw string, cp int, mp int) ApiJson {
 	var count int
 	DB.Table("pz_user").Select("id, username, state").Where("username like ?", "%"+kw+"%").Count(&count).Offset((cp - 1) * mp).Limit(mp).Find(&users)
 	return ApiJson{State: true, Msg: users, Count: count}
+}
+/**
+ * 删除用户
+ * @method UserDele
+ * @param  {[type]} ids int[] [description]
+ */
+func UserDele(ids []int) ApiJson {
+	err := DB.Where("id in (?) ", ids).Delete(User{}).Error
+	if err != nil {
+		return ApiJson{State: false, Msg: err.Error()}
+	} else {
+		return ApiJson{State: true}
+	}
 }

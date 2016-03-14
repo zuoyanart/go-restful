@@ -37,15 +37,18 @@ func main() {
 	//user
 	region.Get("/user", controller.UserGet)           // /user?id=1
 	region.Get("/user/:id", controller.UserGetByPath) //user/1
-	region.Put("/user/:id", controller.UserUpdateName)
+	region.Put("/user", controller.UserUpdate)
 	region.Post("/user", controller.UserCreate)
 	region.Post("/user/page", controller.UserPage)
 	region.Post("/user/login", controller.UserCheckLogin)
+	region.Delete("/user", controller.UserDele)
 	//article
 	region.Get("/article/:id", controller.ArticleGet) //user/1
 	region.Put("/article", controller.ArticleUpdate)
 	region.Post("/article", controller.ArticleCreate)
 	region.Post("/article/page", controller.ArticlePage)
+	region.Post("/article/pass", controller.ArticlePass)
+	region.Delete("/article", controller.ArticleDele)
 	//node
 	region.Get("/node/pageall", controller.NodePageAll)
 	region.Get("/node/:id", controller.NodeGet) //user/1
