@@ -37,5 +37,5 @@ func init() {
 type ApiJson struct {
 	State bool        `json:"state"`
 	Msg   interface{} `json:"msg"`
-	Count int         `json:count`
+	Count int         `json:"count"`
 }
