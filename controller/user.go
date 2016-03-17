@@ -5,7 +5,6 @@ import (
 	"github.com/ivpusic/neo"
 	"pizzaCmsApi/logic"
 	"pizzaCmsApi/model"
-	"pizzaCmsApi/tools"
 	"strings"
 )
 
@@ -21,7 +20,7 @@ import (
  * @apiSuccess {String} msg 消息内容
  */
 func UserGet(ctx *neo.Ctx) (int, error) {
-	id := tools.ParseInt(ctx.Req.FormValue("id"), 0)
+	id := Tools.ParseInt(ctx.Req.FormValue("id"), 0)
 	return 200, ctx.Res.Json(model.UserGet(id))
 }
 
@@ -60,7 +59,7 @@ func UserCheckLogin(ctx *neo.Ctx) (int, error) {
  * @apiSuccess {String} msg 消息
  */
 func UserGetByPath(ctx *neo.Ctx) (int, error) {
-	id := tools.ParseInt(ctx.Req.Params.Get("id"), 0)
+	id := Tools.ParseInt(ctx.Req.Params.Get("id"), 0)
 	return 200, ctx.Res.Json(model.UserGet(id))
 }
 
@@ -134,8 +133,8 @@ var user model.User
 * @apiPermission admin
  */
 func UserPage(ctx *neo.Ctx) (int, error) {
-	cp := tools.ParseInt(ctx.Req.FormValue("cp"), 1)
-	mp := tools.ParseInt(ctx.Req.FormValue("mp"), 20)
+	cp := Tools.ParseInt(ctx.Req.FormValue("cp"), 1)
+	mp := Tools.ParseInt(ctx.Req.FormValue("mp"), 20)
 	kw := ctx.Req.FormValue("kw")
 
 	return 200, ctx.Res.Json(model.UserPage(kw, cp, mp))

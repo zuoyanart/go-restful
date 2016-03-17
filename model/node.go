@@ -1,7 +1,6 @@
 package model
 
 import (
-	"pizzaCmsApi/tools"
 )
 
 type Node struct {
@@ -88,7 +87,6 @@ func NodePage(pid int) ApiJson {
  * @method NodePageAll
  */
 func NodePageAll() ApiJson {
-	tools.Logs("asd");
 	var nodes []Node
 	DB.Select("id, name,nodepath,pid").Order("pid asc").Order("weight desc").Order("id asc").Find(&nodes)
 	return ApiJson{State: true, Msg: nodes}

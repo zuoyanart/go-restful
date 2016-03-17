@@ -5,7 +5,6 @@ import (
 	"github.com/ivpusic/neo"
 	"pizzaCmsApi/logic"
 	"pizzaCmsApi/model"
-	"pizzaCmsApi/tools"
 	"time"
 )
 
@@ -21,7 +20,7 @@ import (
  * @apiSuccess {String} msg 消息
  */
 func ArticleGet(ctx *neo.Ctx) (int, error) {
-	id := tools.ParseInt(ctx.Req.Params.Get("id"), 0)
+	id := Tools.ParseInt(ctx.Req.Params.Get("id"), 0)
 	return 200, ctx.Res.Json(model.ArticleGet(id))
 }
 
@@ -93,9 +92,9 @@ func ArticleCreate(ctx *neo.Ctx) (int, error) {
 * @apiPermission admin
  */
 func ArticlePage(ctx *neo.Ctx) (int, error) {
-	cp := tools.ParseInt(ctx.Req.FormValue("cp"), 1)
-	mp := tools.ParseInt(ctx.Req.FormValue("mp"), 20)
-	nodeid := tools.ParseInt(ctx.Req.FormValue("nodeid"), 0)
+	cp := Tools.ParseInt(ctx.Req.FormValue("cp"), 1)
+	mp := Tools.ParseInt(ctx.Req.FormValue("mp"), 20)
+	nodeid := Tools.ParseInt(ctx.Req.FormValue("nodeid"), 0)
 	kw := ctx.Req.FormValue("kw")
 
 	return 200, ctx.Res.Json(model.ArticlePage(kw, nodeid, cp, mp))
@@ -134,7 +133,7 @@ func ArticleDele(ctx *neo.Ctx) (int, error) {
  */
 func ArticlePass(ctx *neo.Ctx) (int, error) {
 	ids := ctx.Req.FormValue("id")
-	pass := tools.ParseInt(ctx.Req.FormValue("pass"), 0)
+	pass := Tools.ParseInt(ctx.Req.FormValue("pass"), 0)
 	return 200, ctx.Res.Json(logic.ArticlePass(ids, pass))
 
 }

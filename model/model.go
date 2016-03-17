@@ -4,24 +4,31 @@ import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
+	"pizzaCmsApi/config"
+	"pizzaCmsApi/tools"
 )
 
 var (
-	DB gorm.DB
+	DB     gorm.DB
+	Tools  *tools.Tools
+	Config *config.Config
 )
 
 func init() {
+	Config := config.New()
+	Tools = tools.New()
+
 	var err error
-	DB, err = gorm.Open("mysql", "root:huabinglan@@227@(192.168.1.117:3306)/pizzaCms?charset=utf8&parseTime=True&loc=Local")
+	DB, err = gorm.Open("mysql", Config.Mysql.Connect)
 	if err != nil {
 		panic(fmt.Sprintf("No error should happen when connecting to  database, but got err=%+v", err))
 	}
-	DB.DB().SetMaxIdleConns(10) //最大连接数
-	DB.DB().SetMaxOpenConns(100)
+	DB.DB().SetMaxIdleConns(Config.Mysql.MaxIdle) //最大连接数
+	DB.DB().SetMaxOpenConns(Config.Mysql.MaxOpen)
 	DB.SingularTable(true) //// Disable table name's pluralization
 	DB.LogMode(true)
-
 	DB.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(&User{}, &Article{}, &Node{})
+
 }
 
 /**

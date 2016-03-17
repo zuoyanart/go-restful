@@ -2,7 +2,6 @@ package logic
 
 import (
 	"pizzaCmsApi/model"
-	"pizzaCmsApi/tools"
 	"strings"
 )
 
@@ -17,7 +16,7 @@ func ArticleDele(ids string) model.ApiJson {
 	if length > 0 {
 		var idsInt = make([]int, length, length)
 		for i, id := range idsArr {
-			idsInt[i] = tools.ParseInt(id, 0)
+			idsInt[i] = Tools.ParseInt(id, 0)
 		}
 		return model.ArticleDele(idsInt)
 	} else {
@@ -36,7 +35,7 @@ func ArticlePass(ids string, pass int) model.ApiJson {
 	if length > 0 {
 		var idsInt = make([]int, length, length)
 		for i, id := range idsArr {
-			idsInt[i] = tools.ParseInt(id, 0)
+			idsInt[i] = Tools.ParseInt(id, 0)
 		}
 		return model.ArticlePass(idsInt, pass)
 	} else {

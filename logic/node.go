@@ -2,7 +2,6 @@ package logic
 
 import (
 	"pizzaCmsApi/model"
-	"pizzaCmsApi/tools"
 )
 
 /**
@@ -16,7 +15,7 @@ func NodeCreate(node model.Node) model.ApiJson {
 		node.Nodepath = nodeParent.Nodepath
 		id := model.NodeCreate(node)
     node.ID = id;
-    node.Nodepath = node.Nodepath + tools.ParseString(id) + ","
+    node.Nodepath = node.Nodepath + Tools.ParseString(id) + ","
     return model.NodeUpdateNodepath(node);
 	} else {
     	return model.ApiJson{State: false, Msg: "parent node not exist"}

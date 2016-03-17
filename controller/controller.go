@@ -2,19 +2,19 @@ package controller
 
 import (
 	"gopkg.in/go-playground/validator.v8"
+	"pizzaCmsApi/tools"
+
 )
 
 var (
 	validate *validator.Validate
+	Tools    *tools.Tools
 )
 
-
 func init() {
-	config := &validator.Config{TagName: "validate"}
-	validate = validator.New(config)
+	valiconf := &validator.Config{TagName: "validate"}
+	validate = validator.New(valiconf)
 }
-
-
 
 //////////私有方法
 /**
@@ -22,5 +22,5 @@ func init() {
  * @method ErrorValidate
  */
 func errorValidate() string {
-		return `{"state": false, "msg": "数据格式不合法"}`
+	return `{"state": false, "msg": "数据格式不合法"}`
 }

@@ -2,7 +2,6 @@ package logic
 
 import (
 	"pizzaCmsApi/model"
-	"pizzaCmsApi/tools"
 	"strings"
 )
 
@@ -17,7 +16,7 @@ func UserCheckLogin(username string, password string) model.ApiJson {
 	if user.ID == 0 {
 		return model.ApiJson{State: false, Msg: "user is no exist"}
 	} else {
-		pwd := tools.MD5(password + user.Salt)
+		pwd := Tools.MD5(password + user.Salt)
 		if pwd == user.Password {
 			user.Password = ""
 			return model.ApiJson{State: true, Msg: user}
@@ -38,7 +37,7 @@ func UserDele(ids string) model.ApiJson {
 	if length > 0 {
 		var idsInt = make([]int, length, length)
 		for i, id := range idsArr {
-			idsInt[i] = tools.ParseInt(id, 0)
+			idsInt[i] = Tools.ParseInt(id, 0)
 		}
 		return model.UserDele(idsInt)
 	} else {

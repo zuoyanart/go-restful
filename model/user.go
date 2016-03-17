@@ -1,7 +1,6 @@
 package model
 
 import (
-	"pizzaCmsApi/tools"
 )
 
 type User struct {
@@ -55,8 +54,8 @@ func UserUpdate(user User) ApiJson {
 	if user.Password == "" {
 		err = DB.Model(&user).UpdateColumns(map[string]interface{}{"Username": user.Username, "nickname": user.Nickname}).Error
 	} else {
-		var salt = tools.GetRandomString(10)
-		err = DB.Model(&user).UpdateColumns(map[string]interface{}{"Username": user.Username, "Nickname": user.Nickname, "Password": tools.MD5(user.Password + salt), "salt": salt}).Error
+		var salt = Tools.GetRandomString(10)
+		err = DB.Model(&user).UpdateColumns(map[string]interface{}{"Username": user.Username, "Nickname": user.Nickname, "Password": Tools.MD5(user.Password + salt), "salt": salt}).Error
 	}
 	if err != nil {
 		return ApiJson{State: false, Msg: err}
@@ -70,8 +69,8 @@ func UserUpdate(user User) ApiJson {
  * @param  {[type]}   user User [description]
  */
 func UserCreate(user User) ApiJson {
-	var salt = tools.GetRandomString(10)
-	user.Password = tools.MD5(user.Password + salt)
+	var salt = Tools.GetRandomString(10)
+	user.Password = Tools.MD5(user.Password + salt)
 	user.Salt = salt
 	DB.Save(&user)
 	return ApiJson{State: true, Msg: user.ID}

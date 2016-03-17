@@ -1,9 +1,6 @@
 package model
 
-import (
-	// "github.com/jinzhu/gorm"
-	"pizzaCmsApi/tools"
-)
+import ()
 
 type Article struct {
 	ID         int    `json:"id" gorm:"primary_key;AUTO_INCREMENT"`
@@ -14,7 +11,7 @@ type Article struct {
 	Nodeid     int    `json:"nodeid" sql:"default:0"`
 	Count      int    `json:"count" sql:"default:0"`
 	Reco       int    `json:"reco" sql:"default:0"`
-	Createtime int64    `json:"createtime"`
+	Createtime int64  `json:"createtime"`
 	Uid        int    `json:"uid" sql:"default:0"`
 	Pass       int    `json:"pass" sql:"default:0"`
 	Source     string `json:"source" sql:"type:varchar(100);default:''"`
@@ -81,7 +78,7 @@ func ArticlePage(kw string, nodeid int, cp int, mp int) ApiJson {
 	var count int
 	// var param []interface{}
 	// param=append("%"+kw+"%", nodeid, mp, (cp-1)*mp)
-	DB.Raw("select a.*,b.`name` as nodename,c.username from pz_article as a,pz_node as b,pz_user as c where a.nodeid = b.id and a.uid = c.id and a.title like ? and b.nodepath like ?  limit ? offset ?", "%"+kw+"%", "%,"+tools.ParseString(nodeid)+",%", mp, (cp-1)*mp).Scan(&articles)
+	DB.Raw("select a.*,b.`name` as nodename,c.username from pz_article as a,pz_node as b,pz_user as c where a.nodeid = b.id and a.uid = c.id and a.title like ? and b.nodepath like ?  limit ? offset ?", "%"+kw+"%", "%,"+Tools.ParseString(nodeid)+",%", mp, (cp-1)*mp).Scan(&articles)
 
 	return ApiJson{State: true, Msg: articles, Count: count}
 }
