@@ -6,8 +6,8 @@ import (
 	"github.com/jinzhu/gorm"
 	"pizzaCmsApi/config"
 	"pizzaCmsApi/tools"
-)
 
+)
 var (
 	DB     gorm.DB
 	Tools  *tools.Tools
