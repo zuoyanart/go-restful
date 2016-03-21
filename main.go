@@ -43,7 +43,7 @@ func main() {
 	region.Post("/user/login", controller.UserCheckLogin)
 	region.Delete("/user", controller.UserDele)
 	//article
-	region.Get("/article/:id", controller.ArticleGet) //user/1
+	region.Get("/article/:id", controller.ArticleGet)
 	region.Put("/article", controller.ArticleUpdate)
 	region.Post("/article", controller.ArticleCreate)
 	region.Post("/article/page", controller.ArticlePage)
@@ -51,10 +51,16 @@ func main() {
 	region.Delete("/article", controller.ArticleDele)
 	//node
 	region.Get("/node/pageall", controller.NodePageAll)
-	region.Get("/node/:id", controller.NodeGet) //user/1
+	region.Get("/node/:id", controller.NodeGet)
 	region.Put("/node", controller.NodeUpdate)
 	region.Post("/node", controller.NodeCreate)
 	region.Post("/node/page", controller.NodePage)
+	//module
+	region.Get("/block/:id", controller.BlockGet)
+	region.Put("/block", controller.BlockUpdate)
+	region.Post("/block", controller.BlockCreate)
+	region.Post("/block/page", controller.BlockPage)
+	region.Delete("/block", controller.BlockDele)
 
 	app.Start()
 }
