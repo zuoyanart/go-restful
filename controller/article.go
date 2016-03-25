@@ -9,7 +9,7 @@ import (
 )
 
 /**
- * @api {get} /article/:id get article
+ * @api {get} /article/:id 获取文章内容
  * @apiName 获取文章信息by path
  * @apiGroup article
  * @apiVersion 1.0.0
@@ -25,12 +25,23 @@ func ArticleGet(ctx *neo.Ctx) (int, error) {
 }
 
 /**
-* @api {PUT} /article update article
+* @api {PUT} /article 更新文章
 * @apiName 更新article信息
 * @apiGroup article
 * @apiVersion 1.0.0
 * @apiDescription 后台管理员更新文章信息
 * @apiSampleRequest /article
+* @apiParam {int} id 文章id
+* @apiParam {string} title 标题
+* @apiParam {string} timg 标题图片
+* @apiParam {string} content 正文
+* @apiParam {string} brief 描述
+* @apiParam {int} nodeid 节点id
+* @apiParam {int} reco 是否推荐，0否，1:1级推荐，2:2级推荐
+* @apiParam {int} pass 是否审核，0未审核，1审核
+* @apiParam {string} source 文章来源
+* @apiParam {string} tags 标签，英文逗号隔开
+* @apiParam {string} link 文章连接地址
 * @apiSuccess {bool} state 状态
 * @apiSuccess {String} msg 消息
 * @apiPermission admin
@@ -49,17 +60,24 @@ func ArticleUpdate(ctx *neo.Ctx) (int, error) {
 }
 
 /**
-* @api {post} /article create article
-* @apiName 创建article信息1
+* @api {post} /article 创建文章
 * @apiGroup article
 * @apiVersion 1.0.0
 * @apiDescription 创建文章信息
 * @apiSampleRequest /article
-* @apiParam {string} title title
-* @apiParam {string} brief brief
-* @apiParam {string} content content
+* @apiParam {string} title 标题
+* @apiParam {string} timg 标题图片
+* @apiParam {string} content 正文
+* @apiParam {string} brief 描述
+* @apiParam {int} nodeid 节点id
+* @apiParam {int} reco 是否推荐，0否，1:1级推荐，2:2级推荐
+* @apiParam {int} uid  发布人uid
+* @apiParam {int} pass 是否审核，0未审核，1审核
+* @apiParam {string} source 文章来源
+* @apiParam {string} tags 标签，英文逗号隔开
+* @apiParam {string} link 文章连接地址
 * @apiSuccess {bool} state 状态
-* @apiSuccess {String} msg 消息
+* @apiSuccess {String} msg 消息，msg:{id:1},创建统一返回生成的主键id
 * @apiPermission admin
  */
 func ArticleCreate(ctx *neo.Ctx) (int, error) {
@@ -77,16 +95,16 @@ func ArticleCreate(ctx *neo.Ctx) (int, error) {
 }
 
 /**
-* @api {post} /article/page page article
+* @api {post} /article/page 获取文章列表
 * @apiName page article
 * @apiGroup article
 * @apiVersion 1.0.0
 * @apiDescription page article
 * @apiSampleRequest /article/page
 * @apiParam {string} kw 关键字
-* @apiParam {int} cp cp
-* @apiParam {int} mp mp
-* @apiParam {nodeid} nodeid 节点id
+* @apiParam {int} cp 当前第几页
+* @apiParam {int} mp 一页多少条
+* @apiParam {nodeid} nodeid 节点id，支持获取子节点文章
 * @apiSuccess {bool} state 状态
 * @apiSuccess {String} msg 消息
 * @apiPermission admin
@@ -101,7 +119,7 @@ func ArticlePage(ctx *neo.Ctx) (int, error) {
 }
 
 /**
-* @api {delete} /article delete article
+* @api {delete} /article 删除文章
 * @apiName delete article
 * @apiGroup article
 * @apiVersion 1.0.0
@@ -119,13 +137,13 @@ func ArticleDele(ctx *neo.Ctx) (int, error) {
 }
 
 /**
-* @api {post} /article/pass pass article
+* @api {post} /article/pass 审核文章
 * @apiName pass article
 * @apiGroup article
 * @apiVersion 1.0.0
 * @apiDescription delete article by ids[]
 * @apiSampleRequest /article/pass
-* @apiParam {string} id 用户id
+* @apiParam {string} id 文章id，可传多个，用逗号隔开
 * @apiParam {string} pass  pass状态
 * @apiSuccess {bool} state 状态
 * @apiSuccess {String} msg 消息

@@ -7,7 +7,7 @@ import (
 )
 
 /**
- * @api {get} /block/:id get block
+ * @api {get} /block/:id 获取模块
  * @apiName 获取模块信息by path
  * @apiGroup block
  * @apiVersion 1.0.0
@@ -23,12 +23,15 @@ func BlockGet(ctx *neo.Ctx) (int, error) {
 }
 
 /**
-* @api {PUT} /block update block
+* @api {PUT} /block 更新模块
 * @apiName 更新block信息
 * @apiGroup block
 * @apiVersion 1.0.0
 * @apiDescription 后台管理员更新模块信息
 * @apiSampleRequest /block
+* @apiParam {int} id 模块id
+* @apiParam {string} title 模块名称
+* @apiParam {string} content 模块内容
 * @apiSuccess {bool} state 状态
 * @apiSuccess {String} msg 消息
 * @apiPermission admin
@@ -47,15 +50,14 @@ func BlockUpdate(ctx *neo.Ctx) (int, error) {
 }
 
 /**
-* @api {post} /block create block
+* @api {post} /block 创建模块
 * @apiName 创建block信息1
 * @apiGroup block
 * @apiVersion 1.0.0
 * @apiDescription 创建模块信息
 * @apiSampleRequest /block
-* @apiParam {string} title title
-* @apiParam {string} brief brief
-* @apiParam {string} content content
+* @apiParam {string} title 模块名称
+* @apiParam {string} content 模块内容
 * @apiSuccess {bool} state 状态
 * @apiSuccess {String} msg 消息
 * @apiPermission admin
@@ -74,7 +76,7 @@ func BlockCreate(ctx *neo.Ctx) (int, error) {
 }
 
 /**
-* @api {post} /block/page page block
+* @api {post} /block/page 获取模块列表
 * @apiName page block
 * @apiGroup block
 * @apiVersion 1.0.0
@@ -83,7 +85,6 @@ func BlockCreate(ctx *neo.Ctx) (int, error) {
 * @apiParam {string} kw 关键字
 * @apiParam {int} cp cp
 * @apiParam {int} mp mp
-* @apiParam {nodeid} nodeid 节点id
 * @apiSuccess {bool} state 状态
 * @apiSuccess {String} msg 消息
 * @apiPermission admin
@@ -96,7 +97,7 @@ func BlockPage(ctx *neo.Ctx) (int, error) {
 }
 
 /**
-* @api {delete} /block delete block
+* @api {delete} /block 删除模块
 * @apiName delete block
 * @apiGroup block
 * @apiVersion 1.0.0

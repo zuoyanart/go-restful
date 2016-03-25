@@ -32,8 +32,11 @@ func NodeGet(ctx *neo.Ctx) (int, error) {
 * @apiVersion 1.0.0
 * @apiDescription 后台管理员更新节点信息
 * @apiSampleRequest /node/:id
-* @apiParam {string} title 节点名
 * @apiParam {int} id 节点的id
+* @apiParam {string} name 节点名称
+* @apiParam {string} brief 节点描述
+* @apiParam {string} link 节点连接地址
+* @apiParam {int} weight 权重
 * @apiSuccess {bool} state 状态
 * @apiSuccess {String} msg 消息
 * @apiPermission admin
@@ -62,9 +65,11 @@ func NodeUpdate(ctx *neo.Ctx) (int, error) {
 * @apiGroup node
 * @apiVersion 1.0.0
 * @apiDescription 创建节点信息
-* @apiParam {string} name name
-* @apiParam {string} brief brief
-* @apiParam {int} pid pid
+* @apiParam {string} name 节点名称
+* @apiParam {string} brief 节点描述
+* @apiParam {string} link 节点连接地址
+* @apiParam {int} weight 权重
+* @apiParam {int} pid 父节点id
 * @apiSuccess {bool} state 状态
 * @apiSuccess {String} msg 消息
 * @apiPermission admin
@@ -89,7 +94,7 @@ func NodeCreate(ctx *neo.Ctx) (int, error) {
 }
 
 /**
-* @api {post} /node/page page node
+* @api {post} /node/page 获取node列表
 * @apiName page node
 * @apiGroup node
 * @apiVersion 1.0.0
@@ -106,7 +111,7 @@ func NodePage(ctx *neo.Ctx) (int, error) {
 }
 
 /**
-* @api {get} /node/pageall  page all node
+* @api {get} /node/pageall  获取所有的节点
 * @apiName pageAll node
 * @apiGroup node
 * @apiVersion 1.0.0
@@ -117,5 +122,21 @@ func NodePage(ctx *neo.Ctx) (int, error) {
 * @apiPermission admin
  */
 func NodePageAll(ctx *neo.Ctx) (int, error) {
+	return 200, ctx.Res.Json(model.NodePageAll())
+}
+
+/**
+* @api {get} /node/src  获取面包屑路径
+* @apiName pageSrc node
+* @apiGroup node
+* @apiVersion 1.0.0
+* @apiDescription 获取当前节点的面包屑路径
+* @apiSampleRequest /node/src
+* @apiParam {id} id 节点id
+* @apiSuccess {bool} state 状态
+* @apiSuccess {String} msg 消息
+* @apiPermission admin
+ */
+func NodePageSrc(ctx *neo.Ctx) (int, error) {
 	return 200, ctx.Res.Json(model.NodePageAll())
 }

@@ -9,23 +9,7 @@ import (
 )
 
 /**
- * @api {get} /user?id=:id get user
- * @apiName 获取用户信息
- * @apiGroup user
- * @apiVersion 1.0.0
- * @apiDescription 用于后台管理员获取用户信息
- * @apiSampleRequest /user
- * @apiParam {int} id用户id
- * @apiSuccess {bool} state 状态
- * @apiSuccess {String} msg 消息内容
- */
-func UserGet(ctx *neo.Ctx) (int, error) {
-	id := Tools.ParseInt(ctx.Req.FormValue("id"), 0)
-	return 200, ctx.Res.Json(model.UserGet(id))
-}
-
-/**
- * @api {post} /user/login user login
+ * @api {post} /user/login 用户登录
  * @apiName 判断用户是否登录
  * @apiGroup user
  * @apiVersion 1.0.0
@@ -48,7 +32,7 @@ func UserCheckLogin(ctx *neo.Ctx) (int, error) {
 }
 
 /**
- * @api {get} /user/:id get user
+ * @api {get} /user/:id 获取用户信息
  * @apiName 获取用户信息by path
  * @apiGroup user
  * @apiVersion 1.0.0
@@ -56,7 +40,7 @@ func UserCheckLogin(ctx *neo.Ctx) (int, error) {
  * @apiSampleRequest /user/:id
  * @apiParam {int} id用户id
  * @apiSuccess {bool} state 状态
- * @apiSuccess {String} msg 消息
+ * @apiSuccess {String} msg 消息， msg:{id:id,username:username,nickname:nickname,state:state},密码和盐不返回
  */
 func UserGetByPath(ctx *neo.Ctx) (int, error) {
 	id := Tools.ParseInt(ctx.Req.Params.Get("id"), 0)
@@ -64,7 +48,7 @@ func UserGetByPath(ctx *neo.Ctx) (int, error) {
 }
 
 /**
-* @api {PUT} /user update user info
+* @api {PUT} /user 更新用户信息
 * @apiName 更新user信息
 * @apiGroup user
 * @apiVersion 1.0.0
@@ -94,13 +78,13 @@ func UserUpdate(ctx *neo.Ctx) (int, error) {
 }
 
 /**
-* @api {post} /user create user
-* @apiName 创建user信息1
+* @api {post} /user  创建用户
 * @apiGroup user
 * @apiVersion 1.0.0
 * @apiDescription 创建用户信息
 * @apiSampleRequest /user
 * @apiParam {string} username 用户名
+* @apiParam {string} nickname 昵称
 * @apiParam {string} password 密码
 * @apiSuccess {String} msg 消息
 * @apiPermission admin
@@ -119,7 +103,7 @@ var user model.User
 }
 
 /**
-* @api {post} /user/page page user
+* @api {post} /user/page 获取列表
 * @apiName page user
 * @apiGroup user
 * @apiVersion 1.0.0
@@ -141,13 +125,13 @@ func UserPage(ctx *neo.Ctx) (int, error) {
 }
 
 /**
-* @api {delete} /user delete User
+* @api {delete} /user 删除用户
 * @apiName delete user
 * @apiGroup user
 * @apiVersion 1.0.0
 * @apiDescription delete user by ids[]
 * @apiSampleRequest /user
-* @apiParam {string} id 用户id
+* @apiParam {string} id 用户id，可批量
 * @apiSuccess {bool} state 状态
 * @apiSuccess {String} msg 消息
 * @apiPermission admin
