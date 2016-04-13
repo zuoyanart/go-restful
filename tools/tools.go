@@ -82,7 +82,12 @@ func (t *Tools) StructToString(data interface{}) string {
 	}
 }
 
-//生成随机字符串
+/**
+ * 生成随机字符串,n是字符串长度
+ * @method func
+ * @param  {[type]} t *Tools        [description]
+ * @return {[type]}   [description]
+ */
 func (t *Tools) GetRandomString(n int) string {
 	const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ~!@#$%^&*()+[]{}/<>;:=.,?"
 	b := make([]byte, n)
