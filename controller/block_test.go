@@ -12,6 +12,6 @@ var request = gorequest.New()
 func TestBlockGet(t *testing.T) {
 	Convey("获取模块", t, func() {
 		resp, body, errs := request.Get(url + "block/1").End()
-		So(body, ShouldEqual, 1)
+		So(body, ShouldEqual, 2)
 	})
 }
