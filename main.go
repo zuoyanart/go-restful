@@ -35,7 +35,6 @@ func main() {
 	 */
 	region := app.Region().Prefix("/v1")
 	//user
-	region.Get("/user", controller.UserGet)           // /user?id=1
 	region.Get("/user/:id", controller.UserGetByPath) //user/1
 	region.Put("/user", controller.UserUpdate)
 	region.Post("/user", controller.UserCreate)

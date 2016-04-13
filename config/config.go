@@ -2,7 +2,9 @@ package config
 
 import (
 	"github.com/BurntSushi/toml"
-  "sync"
+	"os"
+	"strings"
+	"sync"
 )
 
 type Config struct {
@@ -44,8 +46,10 @@ var (
  */
 func New() *Config {
 	once.Do(func() { //只执行一次
-		if _, err := toml.DecodeFile("config.toml", &c); err != nil {
-			 panic(err.Error())
+		file, _ := os.Getwd()
+		file = strings.Replace(file, "controller", "", -1)
+		if _, err := toml.DecodeFile(file + "/config.toml", &c); err != nil {
+			panic(err.Error())
 		}
 	})
 	return c
