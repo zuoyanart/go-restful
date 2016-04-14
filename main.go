@@ -60,6 +60,12 @@ func main() {
 	region.Post("/block", controller.BlockCreate)
 	region.Post("/block/page", controller.BlockPage)
 	region.Delete("/block", controller.BlockDele)
+	//comment
+	region.Get("/comment/:id", controller.CommentGet)
+	region.Put("/comment", controller.CommentUpdate)
+	region.Post("/comment", controller.CommentCreate)
+	region.Post("/comment/page", controller.CommentPage)
+	region.Delete("/comment", controller.CommentDele)
 
 	app.Start()
 }
