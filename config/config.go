@@ -47,7 +47,7 @@ var (
 func New() *Config {
 	once.Do(func() { //只执行一次
 		file, _ := os.Getwd()
-		file = strings.Replace(file, "controller", "", -1)
+		file = strings.Replace(file, "restest", "", -1)
 		if _, err := toml.DecodeFile(file + "/config.toml", &c); err != nil {
 			panic(err.Error())
 		}

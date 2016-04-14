@@ -9,7 +9,7 @@ import (
 
 )
 var (
-	DB     *gorm.DB
+	DB     gorm.DB
 	Tools  *tools.Tools
 	Config *config.Config
 )
@@ -17,7 +17,7 @@ var (
 func init() {
 	Config := config.New()
 	Tools = tools.New()
-	
+
 	var err error
 	DB, err = gorm.Open("mysql", Config.Mysql.Connect)
 	if err != nil {

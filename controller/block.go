@@ -2,8 +2,8 @@ package controller
 
 import (
 	"github.com/ivpusic/neo"
-	"pizzaCmsApi/model"
 	"pizzaCmsApi/logic"
+	"pizzaCmsApi/model"
 )
 
 /**
@@ -19,6 +19,10 @@ import (
  */
 func BlockGet(ctx *neo.Ctx) (int, error) {
 	id := Tools.ParseInt(ctx.Req.Params.Get("id"), 0)
+	err := validate.Field(id, "required,min=1")
+	if err != nil {
+		return 200, ctx.Res.Json(errorValidate())
+	}
 	return 200, ctx.Res.Json(model.BlockGet(id))
 }
 
@@ -93,6 +97,12 @@ func BlockPage(ctx *neo.Ctx) (int, error) {
 	cp := Tools.ParseInt(ctx.Req.FormValue("cp"), 1)
 	mp := Tools.ParseInt(ctx.Req.FormValue("mp"), 20)
 	kw := ctx.Req.FormValue("kw")
+	err1 := validate.Field(cp, "required,min=1")
+	err2 := validate.Field(mp, "required,min=1,max=50")
+	err3 := validate.Field(kw, "required,max=50")
+	if err1 != nil || err2 != nil || err3 != nil {
+		return 200, ctx.Res.Json(errorValidate())
+	}
 	return 200, ctx.Res.Json(model.BlockPage(kw, cp, mp))
 }
 
@@ -110,6 +120,10 @@ func BlockPage(ctx *neo.Ctx) (int, error) {
  */
 func BlockDele(ctx *neo.Ctx) (int, error) {
 	ids := ctx.Req.FormValue("id")
+	err := validate.Field(ids, "required,min=2")
+	if err != nil {
+		return 200, ctx.Res.Json(errorValidate())
+	}
 	return 200, ctx.Res.Json(logic.BlockDele(ids))
 
 }

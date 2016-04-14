@@ -28,7 +28,10 @@ func (u User) TableName() string {
  */
 func UserGet(id int) ApiJson {
 	var user User
-	DB.Select("id,username,nickname,state").First(&user, id)
+	err := DB.Select("id,username,nickname,state").First(&user, id).Error
+	if err != nil {
+			return ApiJson{State: false, Msg: err.Error()}
+	}
 	return ApiJson{State: true, Msg: user}
 }
 
