@@ -54,7 +54,7 @@ func main() {
 	region.Put("/node", controller.NodeUpdate)
 	region.Post("/node", controller.NodeCreate)
 	region.Post("/node/page", controller.NodePage)
-	//module
+	//block
 	region.Get("/block/:id", controller.BlockGet)
 	region.Put("/block", controller.BlockUpdate)
 	region.Post("/block", controller.BlockCreate)

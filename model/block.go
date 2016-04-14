@@ -3,9 +3,9 @@ package model
 import ()
 
 type Block struct {
-	ID      int    `json:"id" gorm:"primary_key;AUTO_INCREMENT"`
-	Title   string `json:"title" sql:"type:varchar(50);default:''"`
-	Content string `json:"content" sql:"type:varchar(10000);default:''"`
+	Id      int    `json:"id" gorm:"primary_key;AUTO_INCREMENT" validate:"omitempty,min=1"` //主键id
+	Title   string `json:"title" sql:"type:varchar(100);default:''"`                           //标题
+	Content string `json:"content" validate:"omitempty,min=1,max=20000"`                   //描述
 }
 
 func (u Block) TableName() string {
@@ -47,7 +47,7 @@ func BlockUpdate(block Block) ApiJson {
  */
 func BlockCreate(block Block) ApiJson {
 	DB.Save(&block)
-	return ApiJson{State: true, Msg: block.ID}
+	return ApiJson{State: true, Msg: block.Id}
 }
 
 /**
@@ -60,17 +60,17 @@ func BlockCreate(block Block) ApiJson {
 func BlockPage(kw string, cp int, mp int) ApiJson {
 	var blocks []Block
 	var count int
-	DB.Table("pz_block").Select("id, title").Where("title like ?", "%"+kw+"%").Count(&count).Offset((cp - 1) * mp).Limit(mp).Find(&blocks)
+	DB.Table("pz_block").Select("*").Where("title like ?", "%"+kw+"%").Count(&count).Offset((cp - 1) * mp).Limit(mp).Find(&blocks)
 	return ApiJson{State: true, Msg: blocks, Count: count}
 }
 
 /**
  * 删除模块
- * @method UserDele
+ * @method BlockDele
  * @param  {[type]} ids int[] [description]
  */
-func BlockDele(ids []int) ApiJson {
-	err := DB.Where("id in (?) ", ids).Delete(Block{}).Error
+func BlockDel(id []int) ApiJson {
+	err := DB.Where("id in (?)", id).Delete(Block{}).Error
 	if err != nil {
 		return ApiJson{State: false, Msg: err.Error()}
 	} else {

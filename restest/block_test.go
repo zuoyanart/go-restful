@@ -7,9 +7,6 @@ import (
 	"testing"
 )
 
-
-
-
 type jsonBlock struct {
 	State bool
 	Msg   model.Block
@@ -28,18 +25,20 @@ type jsonBlockList struct {
 
 func TestBlockCreate(t *testing.T) {
 	Convey("创建模块", t, func() {
-		_, body, _ := request.Post(Url + "block").Send(`{ "title": "ces","content":"content"}`).End()
-		var jb jsonBlockGet
-		json.Unmarshal([]byte(body), &jb) //转换成struct
-		id = jb.Msg                       //赋值id
-		So(jb.State, ShouldEqual, true)
+		_, body, _ := request.Post(Url + "block").Send(`{"title": "title","content": "content","1":"1"}`).End()
+		var jsonEnt jsonBlockGet
+		json.Unmarshal([]byte(body), &jsonEnt) //转换成struct
+		id = jsonEnt.Msg                       //赋值id
+		So(jsonEnt.State, ShouldEqual, true)
+		// So(body, ShouldEqual, true)
 		Convey("创建后验证", func() {
 			_, body, _ := request.Get(Url + "block/" + Tools.ParseString(id)).End()
-			var jb jsonBlock
-			json.Unmarshal([]byte(body), &jb)
-			So(jb.State, ShouldEqual, true)
-			So(jb.Msg.Title, ShouldEqual, "ces")
-			So(jb.Msg.Content, ShouldEqual, "content")
+			var jsonEnt jsonBlock
+			json.Unmarshal([]byte(body), &jsonEnt)
+			So(jsonEnt.State, ShouldEqual, true)
+			So(jsonEnt.Msg.Title, ShouldEqual, "title")
+			So(jsonEnt.Msg.Content, ShouldEqual, "content")
+
 		})
 	})
 }
@@ -47,27 +46,27 @@ func TestBlockCreate(t *testing.T) {
 func TestBlockGet(t *testing.T) {
 	Convey("获取模块", t, func() {
 		_, body, _ := request.Get(Url + "block/" + Tools.ParseString(id)).End()
-		var jb jsonBlock
-		json.Unmarshal([]byte(body), &jb)
-		So(jb.State, ShouldEqual, true)
-		So(jb.Msg.ID, ShouldEqual, id)
+		var jsonEnt jsonBlock
+		json.Unmarshal([]byte(body), &jsonEnt)
+		So(jsonEnt.State, ShouldEqual, true)
+		So(jsonEnt.Msg.Id, ShouldEqual, id)
 	})
 }
 
 func TestBlockUpdate(t *testing.T) {
 	Convey("更新模块", t, func() {
-		_, body, _ := request.Put(Url + "block").Send(`{"id":` + Tools.ParseString(id) + `, "title": "ces","content":"content"}`).End()
-		var jb jsonBlock
-		json.Unmarshal([]byte(body), &jb)
-		So(jb.State, ShouldEqual, true)
+		_, body, _ := request.Put(Url + "block").Send(`{"id":`+Tools.ParseString(id)+`,"title": "title","content": "content","1":"1"}}`).End()
+		var jsonEnt jsonBlock
+		json.Unmarshal([]byte(body), &jsonEnt)
+		So(jsonEnt.State, ShouldEqual, true)
 		Convey("更新后验证", func() {
 			_, body, _ := request.Get(Url + "block/" + Tools.ParseString(id)).End()
-			var jb jsonBlock
-			json.Unmarshal([]byte(body), &jb)
-			So(jb.State, ShouldEqual, true)
-			So(jb.Msg.ID, ShouldEqual, id)
-			So(jb.Msg.Title, ShouldEqual, "ces")
-			So(jb.Msg.Content, ShouldEqual, "content")
+			var jsonEnt jsonBlock
+			json.Unmarshal([]byte(body), &jsonEnt)
+			So(jsonEnt.State, ShouldEqual, true)
+			So(jsonEnt.Msg.Title, ShouldEqual, "title")
+			So(jsonEnt.Msg.Content, ShouldEqual, "content")
+
 		})
 	})
 }
@@ -75,14 +74,24 @@ func TestBlockUpdate(t *testing.T) {
 func TestBlockDele(t *testing.T) {
 	Convey("删除模块", t, func() {
 		_, body, _ := request.Delete(Url + "block").Query("id=" + Tools.ParseString(id)).End()
-		var jb jsonBlock
-		json.Unmarshal([]byte(body), &jb)
-		So(jb.State, ShouldEqual, true)
+		var jsonEnt jsonBlock
+		json.Unmarshal([]byte(body), &jsonEnt)
+		So(jsonEnt.State, ShouldEqual, true)
 		Convey("获取验证", func() {
 			_, body, _ := request.Get(Url + "block/" + Tools.ParseString(id)).End()
-			var jb jsonBlock
-			json.Unmarshal([]byte(body), &jb)
-			So(jb.State, ShouldEqual, false)
+			var jsonEnt jsonBlock
+			json.Unmarshal([]byte(body), &jsonEnt)
+			So(jsonEnt.State, ShouldEqual, false)
 		})
+	})
+}
+
+func TestBlockPage(t *testing.T) {
+	Convey("获取列表模块", t, func() {
+		_, body, _ := request.Post(Url + "block/page").Send("cp=1&mp=10&kw=").End()
+		var jsonEnt jsonBlockList
+		json.Unmarshal([]byte(body), &jsonEnt)
+		So(jsonEnt.State, ShouldEqual, true)
+		So(jsonEnt.Count, ShouldNotEqual, 0)
 	})
 }

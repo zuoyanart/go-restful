@@ -8,19 +8,22 @@ import (
 
 /**
  * @api {get} /block/:id 获取模块
- * @apiName 获取模块信息by path
+ * @apiName get block
  * @apiGroup block
  * @apiVersion 1.0.0
- * @apiDescription 用于后台管理员获取模块信息
+ * @apiDescription 获取模块信息
  * @apiSampleRequest /block/:id
- * @apiParam {int} id模块id
+ * @apiParam {int} id模块的id
  * @apiSuccess {bool} state 状态
  * @apiSuccess {String} msg 消息
+ * @apiSuccess {int} --id 主键id
+ * @apiSuccess {string} --title 标题
+ * @apiSuccess {string} --content 描述
  */
 func BlockGet(ctx *neo.Ctx) (int, error) {
 	id := Tools.ParseInt(ctx.Req.Params.Get("id"), 0)
-	err := validate.Field(id, "required,min=1")
-	if err != nil {
+	err1 := validate.Field(id, "omitempty,min=1")
+	if err1 != nil {
 		return 200, ctx.Res.Json(errorValidate())
 	}
 	return 200, ctx.Res.Json(model.BlockGet(id))
@@ -28,14 +31,12 @@ func BlockGet(ctx *neo.Ctx) (int, error) {
 
 /**
 * @api {PUT} /block 更新模块
-* @apiName 更新block信息
+* @apiName update block
 * @apiGroup block
 * @apiVersion 1.0.0
-* @apiDescription 后台管理员更新模块信息
+* @apiDescription 更新模块信息
 * @apiSampleRequest /block
-* @apiParam {int} id 模块id
-* @apiParam {string} title 模块名称
-* @apiParam {string} content 模块内容
+* @apiParam {Block} block
 * @apiSuccess {bool} state 状态
 * @apiSuccess {String} msg 消息
 * @apiPermission admin
@@ -55,13 +56,12 @@ func BlockUpdate(ctx *neo.Ctx) (int, error) {
 
 /**
 * @api {post} /block 创建模块
-* @apiName 创建block信息1
+* @apiName create block
 * @apiGroup block
 * @apiVersion 1.0.0
 * @apiDescription 创建模块信息
 * @apiSampleRequest /block
-* @apiParam {string} title 模块名称
-* @apiParam {string} content 模块内容
+* @apiParam {Block} block 模块信息
 * @apiSuccess {bool} state 状态
 * @apiSuccess {String} msg 消息
 * @apiPermission admin
@@ -97,9 +97,9 @@ func BlockPage(ctx *neo.Ctx) (int, error) {
 	cp := Tools.ParseInt(ctx.Req.FormValue("cp"), 1)
 	mp := Tools.ParseInt(ctx.Req.FormValue("mp"), 20)
 	kw := ctx.Req.FormValue("kw")
-	err1 := validate.Field(cp, "required,min=1")
-	err2 := validate.Field(mp, "required,min=1,max=50")
-	err3 := validate.Field(kw, "required,max=50")
+	err1 := validate.Field(kw, "omitempty,max=20")
+	err2 := validate.Field(cp, "required,min=1")
+	err3 := validate.Field(mp, "required,min=1,max=50")
 	if err1 != nil || err2 != nil || err3 != nil {
 		return 200, ctx.Res.Json(errorValidate())
 	}
@@ -111,19 +111,20 @@ func BlockPage(ctx *neo.Ctx) (int, error) {
 * @apiName delete block
 * @apiGroup block
 * @apiVersion 1.0.0
-* @apiDescription delete block by ids[]
+* @apiDescription delete block by id
 * @apiSampleRequest /block
-* @apiParam {string} id 模块id，可传多个用逗号隔开
+* @apiParam {string} id 模块id
+* @apiParam {int} uid 用户的uid
 * @apiSuccess {bool} state 状态
 * @apiSuccess {String} msg 消息
 * @apiPermission admin
  */
 func BlockDele(ctx *neo.Ctx) (int, error) {
 	ids := ctx.Req.FormValue("id")
-	err := validate.Field(ids, "required,min=2")
-	if err != nil {
+	err1 := validate.Field(ids, "required,min=1")
+	if err1 != nil {
 		return 200, ctx.Res.Json(errorValidate())
 	}
-	return 200, ctx.Res.Json(logic.BlockDele(ids))
+	return 200, ctx.Res.Json(logic.BlockDel(ids))
 
 }

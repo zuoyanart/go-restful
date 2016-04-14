@@ -8,7 +8,7 @@ import(
  * @method UserDele
  * @param  {[type]} ids string [description]
  */
-func BlockDele(ids string) model.ApiJson {
+func BlockDel(ids string) model.ApiJson {
 	idsArr := strings.Split(ids, ",")
 	length := len(idsArr)
 	if length > 0 {
@@ -16,7 +16,7 @@ func BlockDele(ids string) model.ApiJson {
 		for i, id := range idsArr {
 			idsInt[i] = Tools.ParseInt(id, 0)
 		}
-		return model.BlockDele(idsInt)
+		return model.BlockDel(idsInt)
 	} else {
 		return model.ApiJson{State: false, Msg: "id is error"}
 	}
