@@ -89,6 +89,7 @@ func CommentCreate(ctx *neo.Ctx) (int, error) {
 * @apiDescription page comment
 * @apiSampleRequest /comment/page
 * @apiParam {string} kw 关键字
+* @apiParam {int} id  文章id
 * @apiParam {int} cp cp
 * @apiParam {int} mp mp
 * @apiSuccess {bool} state 状态
@@ -98,12 +99,14 @@ func CommentCreate(ctx *neo.Ctx) (int, error) {
 func CommentPage(ctx *neo.Ctx) (int, error) {
 	cp := Tools.ParseInt(ctx.Req.FormValue("cp"), 1)
 	mp := Tools.ParseInt(ctx.Req.FormValue("mp"), 20)
+	id := Tools.ParseInt(ctx.Req.FormValue("id"), 0)
+	err1 := validate.Field(cp, "required,min=1")
 	err2 := validate.Field(cp, "required,min=1")
 	err3 := validate.Field(mp, "required,min=1,max=50")
-	if err2 != nil || err3 != nil {
+	if err1 != nil || err2 != nil || err3 != nil {
 		return 200, ctx.Res.Json(errorValidate())
 	}
-	return 200, ctx.Res.Json(model.CommentPage(cp, mp))
+	return 200, ctx.Res.Json(model.CommentPage(id, cp, mp))
 }
 
 /**
@@ -114,7 +117,6 @@ func CommentPage(ctx *neo.Ctx) (int, error) {
 * @apiDescription delete comment by id
 * @apiSampleRequest /comment
 * @apiParam {string} id 文章评论id
-* @apiParam {int} uid 用户的uid
 * @apiSuccess {bool} state 状态
 * @apiSuccess {String} msg 消息
 * @apiPermission admin

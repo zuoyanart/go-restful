@@ -60,10 +60,10 @@ func CommentCreate(comment Comment) ApiJson {
  * @param  {[type]}  cp int    [description]
  * @param  {[type]}  mp int    [description]
  */
-func CommentPage(cp int, mp int) ApiJson {
+func CommentPage(articleid int,cp int, mp int) ApiJson {
 	var comments []Comment
 	var count int
-	DB.Table("pz_comment").Select("*").Count(&count).Offset((cp - 1) * mp).Limit(mp).Find(&comments)
+	DB.Table("pz_comment").Where("articleid = ?", articleid).Select("*").Count(&count).Offset((cp - 1) * mp).Limit(mp).Find(&comments)
 	return ApiJson{State: true, Msg: comments, Count: count}
 }
 
