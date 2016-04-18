@@ -66,6 +66,15 @@ func main() {
 	region.Post("/comment", controller.CommentCreate)
 	region.Post("/comment/page", controller.CommentPage)
 	region.Delete("/comment", controller.CommentDele)
+	//用户组
+	region.Get("/usergroup/:id", controller.UsergroupGet)
+	region.Put("/usergroup", controller.UsergroupUpdate)
+	region.Post("/usergroup", controller.UsergroupCreate)
+	region.Post("/usergroup/page", controller.UsergroupPage)
+	region.Delete("/usergroup", controller.UsergroupDele)
+
+
+
 
 	app.Start()
 }
