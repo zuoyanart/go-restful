@@ -72,7 +72,12 @@ func main() {
 	region.Post("/usergroup", controller.UsergroupCreate)
 	region.Post("/usergroup/page", controller.UsergroupPage)
 	region.Delete("/usergroup", controller.UsergroupDele)
-
+	//角色
+	region.Get("/role/:id", controller.RoleGet)
+	region.Put("/role", controller.RoleUpdate)
+	region.Post("/role", controller.RoleCreate)
+	region.Post("/role/page", controller.RolePage)
+	region.Delete("/role", controller.RoleDele)
 
 
 
