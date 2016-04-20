@@ -78,7 +78,12 @@ func main() {
 	region.Post("/role", controller.RoleCreate)
 	region.Post("/role/page", controller.RolePage)
 	region.Delete("/role", controller.RoleDele)
-
+	//权限管理，部门和菜单
+	region.Get("/power/:id", controller.ActionmenuGet)
+	region.Put("/power", controller.ActionmenuUpdate)
+	region.Post("/power", controller.ActionmenuCreate)
+	region.Post("/power/page", controller.ActionmenuPage)
+	region.Delete("/power", controller.ActionmenuDele)
 
 
 	app.Start()
