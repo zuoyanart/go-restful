@@ -22,3 +22,30 @@
 --main.go
 
 CGO_ENABLED=0 GOOS=linux GOARCH=386 go build gopkg.in/alecthomas
+
+
+## 包管理工具
+本项目使用godep做包管理，依赖的包已经包含在项目中。参考命令
+1.install godeo
+
+```
+go get github.com/tools/godep
+```
+
+2.编译和运行
+
+```
+godep go run main.go
+```
+
+3.发布
+
+```js
+godep go run
+```
+
+or
+
+```
+godep go build
+```
