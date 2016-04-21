@@ -14,10 +14,10 @@
 [app]
   # additional application arguments
   args = []
-  addr = ":3000"
+  addr = ":4000"
 
   [app.logger]
-    level = "DEBUG"
+    level = "debug"
     name = "application"
 
 ##### 运行参数
@@ -37,4 +37,4 @@
 #
 [neo]
   [neo.logger]
-  level = "INFO"
+  level = "DEBUG"

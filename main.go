@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"github.com/ivpusic/neo"
 	"pizzaCmsApi/controller"
+	"time"
 )
 
 func main() {
@@ -14,6 +16,9 @@ func main() {
 	 * @param  {[type]} func(ctx *neo.Ctx, next neo.Next [description]
 	 */
 	app.Use(func(ctx *neo.Ctx, next neo.Next) {
+		start := time.Now()
+		fmt.Printf("\n-----> [Req] %s to %s", ctx.Req.Method, ctx.Req.URL.Path)
+
 		// if authorized {
 		//     next()
 		// } else {
@@ -24,6 +29,9 @@ func main() {
 		ctx.Res.Header().Add("Access-Control-Allow-Methods", "GET, POST, PUT,DELETE, OPTIONS")
 		ctx.Res.Header().Add("Access-Control-Max-Age", "1728000")
 		next()
+
+		elapsed := float64(time.Now().Sub(start) / time.Millisecond)
+    fmt.Printf("[Res] (%d) %s to %s Took %vms", ctx.Res.Status, ctx.Req.Method, ctx.Req.URL.Path, elapsed)
 	})
 	// 添加跨域响应，响应options验证（设置请求头，代码在上方）,部署的时候请去掉这行代码
 	app.Options("*", func(ctx *neo.Ctx) (int, error) {
@@ -84,7 +92,6 @@ func main() {
 	region.Post("/power", controller.ActionmenuCreate)
 	region.Post("/power/page", controller.ActionmenuPage)
 	region.Delete("/power", controller.ActionmenuDele)
-
 
 	app.Start()
 }
