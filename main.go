@@ -17,7 +17,7 @@ func main() {
 	 */
 	app.Use(func(ctx *neo.Ctx, next neo.Next) {
 		start := time.Now()
-		fmt.Printf("\n-----> [Req] %s to %s", ctx.Req.Method, ctx.Req.URL.Path)
+		// fmt.Printf("\n\n---------------> [Req] %s to %s", ctx.Req.Method, ctx.Req.URL.Path)
 
 		// if authorized {
 		//     next()
@@ -31,7 +31,7 @@ func main() {
 		next()
 
 		elapsed := float64(time.Now().Sub(start) / time.Millisecond)
-    fmt.Printf("[Res] (%d) %s to %s Took %vms", ctx.Res.Status, ctx.Req.Method, ctx.Req.URL.Path, elapsed)
+    fmt.Printf("<----------------------[Res] (%d) %s to %s Took %vms\n\n", ctx.Res.Status, ctx.Req.Method, ctx.Req.URL.Path, elapsed)
 	})
 	// 添加跨域响应，响应options验证（设置请求头，代码在上方）,部署的时候请去掉这行代码
 	app.Options("*", func(ctx *neo.Ctx) (int, error) {

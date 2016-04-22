@@ -59,9 +59,8 @@ func BlockCreate(block Block) ApiJson {
  */
 func BlockPage(kw string, cp int, mp int) ApiJson {
 	var blocks []Block
-	var count int
-	DB.Table("pz_block").Select("*").Where("title like ?", "%"+kw+"%").Count(&count).Offset((cp - 1) * mp).Limit(mp).Find(&blocks)
-	return ApiJson{State: true, Msg: blocks, Count: count}
+	DB.Table("pz_block").Select("*").Where("title like ?", "%"+kw+"%").Offset((cp - 1) * mp).Limit(mp).Find(&blocks)
+	return ApiJson{State: true, Msg: blocks, Count: 0}
 }
 
 /**

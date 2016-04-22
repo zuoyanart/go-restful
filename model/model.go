@@ -27,7 +27,7 @@ func init() {
 	DB.DB().SetMaxOpenConns(Config.Mysql.MaxOpen)
 	DB.SingularTable(true) //// Disable table name's pluralization
 	DB.LogMode(true)
-	DB.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(&User{}, &Article{}, &Node{})
+	DB.Set("gorm:table_options", "ENGINE=InnoDB")//.AutoMigrate(&User{}, &Article{}, &Node{})
 
 }
 
