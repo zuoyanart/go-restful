@@ -9,7 +9,7 @@ import (
 
 )
 var (
-	DB     gorm.DB
+	DB     *gorm.DB
 	Tools  *tools.Tools
 	Config *config.Config
 )
