@@ -3,7 +3,6 @@ package controller
 import (
 	"gopkg.in/go-playground/validator.v8"
 	"pizzaCmsApi/tools"
-
 )
 
 var (
@@ -12,8 +11,8 @@ var (
 )
 
 func init() {
-	valiconf := &validator.Config{TagName: "validate"}
-	validate = validator.New(valiconf)
+	validate = validator.New()
+	Tools = tools.New()
 }
 
 //////////私有方法
@@ -23,4 +22,16 @@ func init() {
  */
 func errorValidate() string {
 	return `{"state": false, "msg": "数据格式不合法"}`
+}
+
+func errorData(errs ...error) string {
+	var s string
+	for _, err := range errs {
+		if err != nil {
+			s += err.Error() + "<br/>"
+			// Tools.Logs(Tools.StructToString(err))
+			// Tools.Logs(err.Value)
+		}
+	}
+	return s
 }

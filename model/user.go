@@ -1,69 +1,34 @@
 package model
 
 import (
+	"gopkg.in/mgo.v2/bson"
+	"time"
 )
 
 type User struct {
-	ID       int    `json:"id" gorm:"primary_key;AUTO_INCREMENT" `
-	Username string `json:"username" sql:"type:varchar(30);default:''" validate:"required,max=30,min=4"`
-	Nickname string `json:"nickname" sql:"type:varchar(30);default:''" validate:"required,max=30,min=2"`
-	Password string `json:"password" sql:"size:100;default:''" validate:"omitempty,max=25,min=6"`
-	State    int    `json:"state" sql:"default:0" validate:"gte=-1,lte=3"`
-	Salt     string `json:"salt"`
-}
-
-// func init() {
-// 	//自动更新表结构，注意：只更新新增的字段和索引
-// 	DB.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(&User{})
-// }
-
-func (u User) TableName() string {
-	return "pz_user"
-}
-
-/**
- * 根据user id获取 user
- * @method UserGet
- * @param  {[type]} id int [description]
- */
-func UserGet(id int) ApiJson {
-	var user User
-	err := DB.Select("id,username,nickname,state").First(&user, id).Error
-	if err != nil {
-			return ApiJson{State: false, Msg: err.Error()}
-	}
-	return ApiJson{State: true, Msg: user}
-}
-
-/**
- * 校验用户登录
- * @method UserCheckLogin
- * @param  {[type]}       username string [description]
- * @param  {[type]}       password string [description]
- */
-func UserCheckLogin(username string) User {
-	var user User
-	DB.Where("username =  ?", username).First(&user)
-	return user
-}
-
-/**
- * 更新user信息
- * @method UserUpdate
- * @param  {[type]}   user User [description]
- */
-func UserUpdate(user User) ApiJson {
-	var err error
-	if user.Password == "" {
-		err = DB.Model(&user).UpdateColumns(map[string]interface{}{"Username": user.Username, "nickname": user.Nickname}).Error
-	} else {
-		var salt = Tools.GetRandomString(10)
-		err = DB.Model(&user).UpdateColumns(map[string]interface{}{"Username": user.Username, "Nickname": user.Nickname, "Password": Tools.MD5(user.Password + salt), "salt": salt}).Error
-	}
-	if err != nil {
-		return ApiJson{State: false, Msg: err}
-	}
-	return ApiJson{State: true}
+	Id           bson.ObjectId `bson:"_id" json:"id"`
+	Username     string        `bson:"userName" json:"username" validate:"required,min=1,max=20"`          //用户名
+	Nickname     string        `bson:"nickName" json:"nickname" validate:"required,min=1,max=20"`          //昵称
+	Password     string        `json:"password" validate:"required,min=6,max=20"`                          //密码
+	Photo        string        `json:"photo" validate:"omitempty,min=1,max=100"`                           //形象照片
+	Avatar       string        `json:"avatar" validate:"omitempty,min=1,max=100"`                          //头像
+	State        int           `json:"state" validate:"omitempty,min=1,max=100"`                           //状态
+	Time         time.Time     `json:"time" validate:"omitempty,min=1,max=50"`                             //最后活动时间
+	Neoid        int           `json:"neoid" validate:"omitempty,min=0"`                                   //图数据库id
+	Feel         string        `json:"feel" validate:"omitempty,min=0,max=10"`                             //励志格言，暂废
+	Hope         string        `json:"hope" validate:"omitempty,min=1,max=2000"`                           //自我介绍
+	Count        int           `json:"count" validate:"omitempty,min=0,max=1000"`                          //人脉总数
+	Privitecount int           `bson:"priviteCount" json:"privitecount" validate:"omitempty,min=0,max=10"` //私有人脉总数
+	Defcom       string        `json:"defcom" validate:"omitempty,min=0,max=10"`                           //默认公司名称
+	Defschool    string        `json:"defschool" validate:"omitempty,min=0,max=10"`                        //默认学校名称
+	Scmail       int           `json:"scmail" validate:"omitempty,min=0,max=10"`                           //能否查看mail
+	Scphone      int           `json:"scphone" validate:"omitempty,min=0,max=10"`                          //能否查看phone
+	Scqq         int           `json:"scqq" validate:"omitempty,min=0,max=10"`                             //能否查看qq
+	Scwx         int           `json:"scwx" validate:"omitempty,min=0,max=10"`                             //否能查看微信
+	Ask          string        `json:"ask" validate:"omitempty,min=1,max=100"`                             //找回密码问题
+	Answer       string        `json:"answer" validate:"omitempty,min=1,max=100"`                          //找回密码答案
+	Industry     string        `json:"industry" validate:"omitempty,min=1,max=500"`                        //所属行业
+	Inddes       string        `json:"inddes" validate:"omitempty,min=1,max=2000"`                         //行业描述
 }
 
 /**
@@ -72,33 +37,88 @@ func UserUpdate(user User) ApiJson {
  * @param  {[type]}   user User [description]
  */
 func UserCreate(user User) ApiJson {
-	var salt = Tools.GetRandomString(10)
-	user.Password = Tools.MD5(user.Password + salt)
-	user.Salt = salt
-	DB.Save(&user)
-	return ApiJson{State: true, Msg: user.ID}
+	session, c := Modb.SwitchC("users")
+	defer session.Close()
+	// user.Id = bson.NewObjectId()
+	err := c.Insert(user)
+	if err != nil {
+		return ApiJson{State: false, Msg: err.Error()}
+	} else {
+		return ApiJson{State: true, Msg: map[string]interface{}{"id": user.Id.Hex(), "neoid": user.Neoid}}
+	}
 }
 
 /**
- * 获取所有的user、
- * @method UserPage
- * @param  {[type]} kw string [description]
- * @param  {[type]} cp int    [description]
- * @param  {[type]} mp int    [description]
+ * 获取一条user
+ * @method UserGet
+ * @param  {[type]} id string [description]
  */
-func UserPage(kw string, cp int, mp int) ApiJson {
-	var users []User
-	var count int
-	DB.Table("pz_user").Select("id, username, state").Where("username like ?", "%"+kw+"%").Count(&count).Offset((cp - 1) * mp).Limit(mp).Find(&users)
-	return ApiJson{State: true, Msg: users, Count: count}
+func UserGet(id string) (User, error) {
+	var user User
+	objid := bson.ObjectIdHex(id)
+	session, c := Modb.SwitchC("users")
+	defer session.Close()
+	err := c.FindId(objid).One(&user)
+	user.Password = ""
+	return user, err
 }
+
 /**
- * 删除用户
- * @method UserDele
- * @param  {[type]} ids int[] [description]
+ * 获取用户信息
+ * @method UserGetByUsername
+ * @param  {[type]}          username string [description]
  */
-func UserDele(ids []int) ApiJson {
-	err := DB.Where("id in (?) ", ids).Delete(User{}).Error
+func UserGetByUsername(username string) (User, error) {
+	var user User
+	session, c := Modb.SwitchC("users")
+	defer session.Close()
+
+	err := c.Find(bson.M{"userName": username}).One(&user)
+	if err != nil {
+		Tools.Logs(err.Error())
+	}
+	return user, err
+}
+
+/**
+ * 获取会员列表
+ * @method UserPage
+ * @param  {[type]} id string [description]
+ */
+func UserPage(uid string, cp int, mp int) ApiJson {
+	var users []User
+	session, c := Modb.SwitchC("users")
+	defer session.Close()
+	err := c.Find(bson.M{"uid": bson.ObjectIdHex(uid)}).Skip((cp - 1) * mp).Sort("-_id").Limit(mp).All(&users) //降序
+	if err != nil {
+		return ApiJson{State: false, Msg: err.Error()}
+	} else {
+		return ApiJson{State: true, Msg: users}
+	}
+}
+
+//删除一条会员
+func UserDel(id string, uid string) ApiJson {
+	session, c := Modb.SwitchC("users")
+	defer session.Close()
+	err := c.Remove(bson.M{"_id": bson.ObjectIdHex(id), "uid": bson.ObjectIdHex(uid)})
+	if err != nil {
+		return ApiJson{State: false, Msg: err.Error()}
+	} else {
+		return ApiJson{State: true}
+	}
+}
+
+/**
+ * 更新user数据
+ * @method UpdateUser
+ * @param  {[type]}   query  bson.M [description]
+ * @param  {[type]}   change bson.M [description]
+ */
+func UserUpdate(query bson.M, change bson.M) ApiJson {
+	session, c := Modb.SwitchC("users")
+	defer session.Close()
+	err := c.Update(query, change)
 	if err != nil {
 		return ApiJson{State: false, Msg: err.Error()}
 	} else {

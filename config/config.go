@@ -2,8 +2,6 @@ package config
 
 import (
 	"github.com/BurntSushi/toml"
-	"os"
-	"strings"
 	"sync"
 )
 
@@ -29,10 +27,10 @@ type mongodb struct {
 }
 
 type redis struct {
-	Connect string
-	DB      int
-	MaxIdle int
-	MaxOpen int
+	Connect   string
+	DB        int
+	MaxIdle   int
+	MaxActive int
 }
 
 var (
@@ -46,21 +44,9 @@ var (
  */
 func New() *Config {
 	once.Do(func() { //只执行一次
-		file, _ := os.Getwd()
-		file = strings.Replace(file, "restest", "", -1)
-		if _, err := toml.DecodeFile(file + "/config.toml", &c); err != nil {
+		if _, err := toml.DecodeFile("config.toml", &c); err != nil {
 			panic(err.Error())
 		}
 	})
 	return c
 }
-
-// /**
-//  * 获取value
-//  * @method func
-//  * @param  {[type]} c *Config       [description]
-//  * @return {[type]}   [description]
-//  */
-// func (c *Config) Get(key string) string {
-// 	return c[key]
-// }

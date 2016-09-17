@@ -1,87 +1,90 @@
 package model
 
-import ()
+import (
+	"gopkg.in/mgo.v2/bson"
+)
 
-type Usergroup struct {
-	Id    int    `json:"id" gorm:"primary_key;AUTO_INCREMENT;" validate:"omitempty,min=1"` //主键id
-	Name  string `json:"name" sql:"type:varchar(255);default:`                             //用户组名称
-	Des   string `json:"des" sql:"type:varchar(1000);default:`                             //用户组描述
-	State int    `json:"state" sql:"default:0" validate:"omitempty,min=1"`                 //用户组状态
+type UserGroupInfo struct {
+	Name  string `json:"name"`
+	State int    `json:"state"`
+	Count int    `json:"count"`
 }
 
-func (u Usergroup) TableName() string {
-	return "pz_userGroup"
+type UserGroup struct {
+	Id    bson.ObjectId   `bson:"_id" json:"id" validate:"omitempty,min=10,max=14"` //
+	Group []UserGroupInfo `json:"group"`                                            //
 }
 
 /**
- * 获取usergroup
- * @method UsergroupGet
- * @param  {[type]} id int [description]
+ * 创建usergroup
+ * @method UserGroupCreate
+ * @param  {[type]}   usergroup UserGroup [description]
  */
-func UsergroupGet(id int) ApiJson {
-	var usergroup Usergroup
-	err := DB.First(&usergroup, id).Error
+func UserGroupCreate(usergroup UserGroup) ApiJson {
+	session, c := Modb.SwitchC("usergroups")
+	defer session.Close()
+	// usergroup.Id = bson.NewObjectId()
+	err := c.Insert(usergroup)
 	if err != nil {
 		return ApiJson{State: false, Msg: err.Error()}
+	} else {
+		return ApiJson{State: true, Msg: usergroup.Id.Hex()}
 	}
-	return ApiJson{State: true, Msg: usergroup}
 }
+
 /**
- * 获取用户组信息通过组名称
- * @method UserGroupGetByName
- * @param  {[type]}           name string [description]
+ * 获取一条usergroup
+ * @method UserGroupGet
+ * @param  {[type]} id string [description]
  */
-func UserGroupGetByName(name string) (Usergroup, error) {
-	var usergroup Usergroup
-	err := DB.Where("name = ?", name).First(&usergroup).Error
+func UserGroupGet(id string) (UserGroup, error) {
+	var usergroup UserGroup
+	objid := bson.ObjectIdHex(id)
+	session, c := Modb.SwitchC("usergroups")
+	defer session.Close()
+	err := c.FindId(objid).One(&usergroup)
 	return usergroup, err
 }
 
 /**
- * 更新usergroup
- * @method UsergroupUpdate
- * @param  {[type]}    usergroup Usergroup [description]
+ * 获取用户分组列表
+ * @method UserGroupPage
+ * @param  {[type]} id string [description]
  */
-func UsergroupUpdate(usergroup Usergroup) ApiJson {
-	err := DB.Model(&usergroup).UpdateColumns(map[string]interface{}{"name": usergroup.Name, "des": usergroup.Des, "state": usergroup.State}).Error
+func UserGroupPage(uid string, cp int, mp int) ApiJson {
+	var usergroups []UserGroup
+	session, c := Modb.SwitchC("usergroups")
+	defer session.Close()
+	err := c.Find(bson.M{"uid": bson.ObjectIdHex(uid)}).Skip((cp - 1) * mp).Sort("-_id").Limit(mp).All(&usergroups) //降序
 	if err != nil {
-		return ApiJson{State: false, Msg: err}
+		return ApiJson{State: false, Msg: err.Error()}
+	} else {
+		return ApiJson{State: true, Msg: usergroups}
+	}
+}
+
+//删除一条用户分组
+func UserGroupDel(id string, uid string) ApiJson {
+	session, c := Modb.SwitchC("usergroups")
+	defer session.Close()
+	err := c.Remove(bson.M{"_id": bson.ObjectIdHex(id), "uid": bson.ObjectIdHex(uid)})
+	if err != nil {
+		return ApiJson{State: false, Msg: err.Error()}
 	} else {
 		return ApiJson{State: true}
 	}
 }
 
 /**
- * 创建usergroup
- * @method UsergroupCreate
- * @param  {[type]}    usergroup Usergroup [description]
+ * 更新usergroup数据
+ * @method UpdateUserGroup
+ * @param  {[type]}   query  bson.M [description]
+ * @param  {[type]}   change bson.M [description]
  */
-func UsergroupCreate(usergroup Usergroup) ApiJson {
-	DB.Save(&usergroup)
-	return ApiJson{State: true, Msg: usergroup.Id}
-}
-
-/**
- * page usergroup
- * @method UsergroupPage
- * @param  {[type]}  kw string [description]
- * @param  {[type]}  cp int    [description]
- * @param  {[type]}  mp int    [description]
- */
-func UsergroupPage(kw string, cp int, mp int) ApiJson {
-	var usergroups []Usergroup
-	var count int
-	DB.Table("pz_userGroup").Select("*").Where("name like ?", "%"+kw+"%").Count(&count).Offset((cp - 1) * mp).Limit(mp).Find(&usergroups)
-	return ApiJson{State: true, Msg: usergroups, Count: count}
-}
-
-/**
- * 删除用户组
- * @method UsergroupDele
- * @param  {[type]} ids int[] [description]
- */
-func UsergroupDel(id int) ApiJson {
-	err := DB.Where("id = ?", id).Delete(Usergroup{}).Error
+func UserGroupUpdate(query bson.M, change bson.M) ApiJson {
+	session, c := Modb.SwitchC("usergroups")
+	defer session.Close()
+	err := c.Update(query, change)
 	if err != nil {
 		return ApiJson{State: false, Msg: err.Error()}
 	} else {

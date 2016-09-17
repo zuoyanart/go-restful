@@ -5,18 +5,24 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	"pizzaCmsApi/config"
+	"pizzaCmsApi/mongodb"
+	"pizzaCmsApi/redis"
 	"pizzaCmsApi/tools"
-
 )
+
 var (
-	DB     *gorm.DB
-	Tools  *tools.Tools
-	Config *config.Config
+	DB     *gorm.DB         //mysql
+	Tools  *tools.Tools     //tools
+	Config *config.Config   //config
+	Modb   *mongodb.Mongodb //mongodb
+	Redis  *redis.Redis     //redis
 )
 
 func init() {
-	Config := config.New()
+	Config = config.New()
 	Tools = tools.New()
+	Modb = mongodb.New(Config.Mongodb.Connect)
+	Redis = redis.New(Config.Redis.Connect, Config.Redis.DB, Config.Redis.MaxIdle, Config.Redis.MaxActive)
 
 	var err error
 	DB, err = gorm.Open("mysql", Config.Mysql.Connect)
@@ -27,7 +33,7 @@ func init() {
 	DB.DB().SetMaxOpenConns(Config.Mysql.MaxOpen)
 	DB.SingularTable(true) //// Disable table name's pluralization
 	DB.LogMode(true)
-	DB.Set("gorm:table_options", "ENGINE=InnoDB")//.AutoMigrate(&User{}, &Article{}, &Node{})
+	DB.Set("gorm:table_options", "ENGINE=InnoDB") //.AutoMigrate(&User{}, &Article{}, &Node{})
 
 }
 

@@ -1,8 +1,8 @@
 {
-  "name" : "pizzaCmsApi",
+  "name" : "renmaiApi",
   "version": "1.0.0",
-  "title": "pizzaCmsApi",
-  "description": "pizzaCmsApi  power bu golang neo",
-  "url": "http://192.168.1.134:3000/v1",
-  "sampleUrl": "http://192.168.1.134:3000/v1"
+  "title": "renmaiApi",
+  "description": "renmai Api power by golang neo",
+  "url": "http://192.168.1.134:3004/v1",
+  "sampleUrl": "http://192.168.1.134:3004/v1"
 }

@@ -1,0 +1,11 @@
+## Repository information
+
+This repository is an edited fork of the [rsc/letsencrypt](https://github.com/rsc/letsencrypt).
+
+
+```go
+iris.ListenTLSAuto()
+```
+
+
+for iris v4.0.0-alpha5+

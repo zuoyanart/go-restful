@@ -1,0 +1,24 @@
+package: pizzaCmsApi
+import:
+- package: github.com/BurntSushi/toml
+  version: ^0.2.0
+- package: github.com/garyburd/redigo
+  version: ^1.0.0
+  subpackages:
+  - redis
+- package: github.com/go-sql-driver/mysql
+  version: ^1.2.0
+- package: github.com/ivpusic/neo
+  version: ^0.1.0
+- package: github.com/jinzhu/gorm
+  version: ^1.0.0
+- package: github.com/kataras/iris
+  version: ^4.2.5
+- package: gopkg.in/mgo.v2
+  subpackages:
+  - bson
+- package: gopkg.in/go-playground/validator.v9
+  version: ^9.1.0
+- package: github.com/iris-contrib/middleware
+  subpackages:
+  - logge
