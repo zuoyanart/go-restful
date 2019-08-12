@@ -22,7 +22,7 @@
 
 # 运行参数
 [mysql]
-  connect = "root:huabinglan@@227@(127.0.0.1:3306)/pizzaCms?charset=utf8&parseTime=True&loc=Local"
+  connect = "root:xxxxxxxxxx@(127.0.0.1:3306)/pizzaCms?charset=utf8&parseTime=True&loc=Local"
   MaxIdle = 10
   MaxOpen = 100
 [mongodb]
