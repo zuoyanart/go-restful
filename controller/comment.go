@@ -1,8 +1,9 @@
 package controller
 
 import (
-	"github.com/kataras/iris"
 	"pizzaCmsApi/model"
+
+	"github.com/kataras/iris/v12"
 )
 
 /**
@@ -22,13 +23,14 @@ import (
  * @apiSuccess {int} --uid 用户id
  * @apiSuccess {string} --username 用户昵称
  */
-func CommentGet(ctx *iris.Context) {
-	id := Tools.ParseInt(ctx.Param("id"), 0)
+func CommentGet(ctx iris.Context) {
+	id := ctx.Params().GetIntDefault("id", 0)
 	err1 := validate.Var(id, "omitempty,min=1")
 	if err1 != nil {
-		ctx.JSON(iris.StatusOK, errorValidate())
+		ctx.JSON(errorValidate())
+		return
 	}
-	ctx.JSON(iris.StatusOK, model.CommentGet(id))
+	ctx.JSON(model.CommentGet(id))
 }
 
 /**
@@ -43,17 +45,19 @@ func CommentGet(ctx *iris.Context) {
 * @apiSuccess {String} msg 消息
 * @apiPermission admin
  */
-func CommentUpdate(ctx *iris.Context) {
+func CommentUpdate(ctx iris.Context) {
 	var comment model.Comment
 	err := ctx.ReadJSON(&comment)
 	if err != nil {
-		ctx.JSON(iris.StatusOK, model.ApiJson{State: false, Msg: err.Error()})
+		ctx.JSON(model.ApiJson{State: false, Msg: err.Error()})
+		return
 	}
 	err1 := validate.Struct(comment)
 	if err1 != nil {
-		ctx.JSON(iris.StatusOK, `{"state": false, "msg": `+err1.Error()+`}`)
+		ctx.JSON(`{"state": false, "msg": ` + err1.Error() + `}`)
+		return
 	}
-	ctx.JSON(iris.StatusOK, model.CommentUpdate(comment))
+	ctx.JSON(model.CommentUpdate(comment))
 }
 
 /**
@@ -68,17 +72,20 @@ func CommentUpdate(ctx *iris.Context) {
 * @apiSuccess {String} msg 消息
 * @apiPermission admin
  */
-func CommentCreate(ctx *iris.Context) {
+func CommentCreate(ctx iris.Context) {
 	var comment model.Comment
 	err := ctx.ReadJSON(&comment)
 	if err != nil {
-		ctx.JSON(iris.StatusOK, model.ApiJson{State: false, Msg: err.Error()})
+		ctx.JSON(model.ApiJson{State: false, Msg: err.Error()})
+		return
 	}
 	err1 := validate.Struct(comment)
 	if err1 != nil {
-		ctx.JSON(iris.StatusOK, `{"state": false, "msg": `+err1.Error()+`}`)
+		ctx.JSON(`{"state": false, "msg": ` + err1.Error() + `}`)
+		return
 	}
-	ctx.JSON(iris.StatusOK, model.CommentCreate(comment))
+
+	ctx.JSON(model.CommentCreate(comment))
 }
 
 /**
@@ -95,17 +102,19 @@ func CommentCreate(ctx *iris.Context) {
 * @apiSuccess {String} msg 消息
 * @apiPermission admin
  */
-func CommentPage(ctx *iris.Context) {
-	cp := Tools.ParseInt(ctx.Param("cp"), 1)
-	mp := Tools.ParseInt(ctx.Param("mp"), 20)
-	kw := ctx.Param("kw")
+func CommentPage(ctx iris.Context) {
+	cp := ctx.Params().GetIntDefault("cp", 1)
+	mp := ctx.Params().GetIntDefault("mp", 20)
+	kw := ctx.Params().Get("kw")
 	err1 := validate.Var(kw, "required, min=1,max=20")
 	err2 := validate.Var(cp, "required,min=1")
 	err3 := validate.Var(mp, "required,min=1,max=50")
 	if err1 != nil || err2 != nil || err3 != nil {
-		ctx.JSON(iris.StatusOK, errorValidate())
+		ctx.JSON(errorValidate())
+		return
 	}
-	ctx.JSON(iris.StatusOK, model.CommentPage(kw, cp, mp))
+
+	ctx.JSON(model.CommentPage(kw, cp, mp))
 }
 
 /**
@@ -121,14 +130,15 @@ func CommentPage(ctx *iris.Context) {
 * @apiSuccess {String} msg 消息
 * @apiPermission admin
  */
-func CommentDele(ctx *iris.Context) {
-	ids := Tools.ParseInt(ctx.Param("id"), 0)
-	uid := Tools.ParseInt(ctx.Param("uid"), 0)
+func CommentDele(ctx iris.Context) {
+	ids := ctx.Params().GetIntDefault("id", 0)
+	uid := ctx.Params().GetIntDefault("uid", 0)
 	err1 := validate.Var(ids, "required, min=1")
 	err2 := validate.Var(uid, "required, min=1")
 	if err1 != nil || err2 != nil {
-		ctx.JSON(iris.StatusOK, errorValidate())
+		ctx.JSON(errorValidate())
+		return
 	}
-	ctx.JSON(iris.StatusOK, model.CommentDel(ids, uid))
 
+	ctx.JSON(model.CommentDel(ids, uid))
 }

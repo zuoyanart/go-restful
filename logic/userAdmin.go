@@ -1,8 +1,9 @@
 package logic
 
 import (
-	"rmApi/model"
 	"strings"
+
+	"pizzaCmsApi/model"
 )
 
 /**

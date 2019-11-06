@@ -1,8 +1,5 @@
 package model
 
-import (
-)
-
 type UserAdmin struct {
 	ID       int    `json:"id" gorm:"primary_key;AUTO_INCREMENT" `
 	Username string `json:"username" sql:"type:varchar(30);default:''" validate:"required,max=30,min=4"`
@@ -89,6 +86,7 @@ func UserAdminPage(kw string, cp int, mp int) ApiJson {
 	DB.Table("pz_user").Select("id, username, state").Where("username like ?", "%"+kw+"%").Count(&count).Offset((cp - 1) * mp).Limit(mp).Find(&users)
 	return ApiJson{State: true, Msg: users, Count: count}
 }
+
 /**
  * 删除用户
  * @method UserAdminDele

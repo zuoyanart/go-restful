@@ -1,18 +1,17 @@
 package controller
 
 import (
-	"gopkg.in/go-playground/validator.v8"
-	"pizzaCmsApi/tools"
+	"gopkg.in/go-playground/validator.v9"
 )
 
 var (
 	validate *validator.Validate
-	Tools    *tools.Tools
+	// Tools    *tools.Tools
 )
 
 func init() {
 	validate = validator.New()
-	Tools = tools.New()
+	// Tools = tools.New()
 }
 
 //////////私有方法

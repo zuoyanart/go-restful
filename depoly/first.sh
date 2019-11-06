@@ -6,4 +6,4 @@
 # 切换到项目根目录，启动端口监听
 # 端口监听20s,然后模拟输出Ctrl+c,主要是确保bable编译完成
 # 运行mocha单元测试
-git clone https://github.com/zuoyanart/pizzaCmsApi.git pizzatest && cd pizzatest && godep restore && neo run -c config.toml;
+git clone https://github.com/zuoyanart/pizzaCmsApi.git pizzatest && cd pizzatest && go run main.go;

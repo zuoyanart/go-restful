@@ -50,7 +50,7 @@ func getSession() *mgo.Session {
 // 	f(c)
 // }
 func (m *Mongodb) SwitchC(collName string) (*mgo.Session, *mgo.Collection) {
-  session := getSession()
+	session := getSession()
 	c := session.DB("").C(collName)
 	return session, c
 }

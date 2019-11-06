@@ -1,3 +1,3 @@
 @ECHO ON
-apidoc -i controller/ -o ../../../doc/rmapi/
+apidoc -i controller/ -o ../../../doc/pizzaCmsApi/
 pause

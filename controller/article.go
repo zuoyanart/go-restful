@@ -1,11 +1,12 @@
 package controller
 
 import (
-	// "encoding/json"
-	"github.com/kataras/iris"
+	"time"
+
 	"pizzaCmsApi/logic"
 	"pizzaCmsApi/model"
-	"time"
+
+	"github.com/kataras/iris/v12"
 )
 
 /**
@@ -19,9 +20,9 @@ import (
  * @apiSuccess {bool} state 状态
  * @apiSuccess {String} msg 消息
  */
-func ArticleGet(ctx *iris.Context) {
-	id := Tools.ParseInt(ctx.Param("id"), 0)
-	ctx.JSON(iris.StatusOK, model.ArticleGet(id))
+func ArticleGet(ctx iris.Context) {
+	id := ctx.Params().GetIntDefault("id", 0)
+	ctx.JSON(model.ArticleGet(id))
 }
 
 /**
@@ -35,17 +36,20 @@ func ArticleGet(ctx *iris.Context) {
 * @apiSuccess {String} msg 消息
 * @apiPermission admin
  */
-func ArticleUpdate(ctx *iris.Context) {
+func ArticleUpdate(ctx iris.Context) {
 	var article model.Article
 	err := ctx.ReadJSON(&article)
 	if err != nil {
-		ctx.JSON(iris.StatusOK, model.ApiJson{State: false, Msg: err.Error()})
+		ctx.JSON(model.ApiJson{State: false, Msg: err.Error()})
+		return
 	}
+
 	err1 := validate.Struct(article)
 	if err1 != nil {
-		ctx.JSON(iris.StatusOK, `{"state": false, "msg": `+err1.Error()+`}`)
+		ctx.JSON(`{"state": false, "msg": ` + err1.Error() + `}`)
+		return
 	}
-	ctx.JSON(iris.StatusOK, model.ArticleUpdate(article))
+	ctx.JSON(model.ArticleUpdate(article))
 }
 
 /**
@@ -62,18 +66,20 @@ func ArticleUpdate(ctx *iris.Context) {
 * @apiSuccess {String} msg 消息
 * @apiPermission admin
  */
-func ArticleCreate(ctx *iris.Context) {
+func ArticleCreate(ctx iris.Context) {
 	var article model.Article
 	err := ctx.ReadJSON(&article)
 	if err != nil {
-		ctx.JSON(iris.StatusOK, model.ApiJson{State: false, Msg: err.Error()})
+		ctx.JSON(model.ApiJson{State: false, Msg: err.Error()})
+		return
 	}
 	err1 := validate.Struct(article)
 	if err1 != nil {
-		ctx.JSON(iris.StatusOK, `{"state": false, "msg": `+err1.Error()+`}`)
+		ctx.JSON(`{"state": false, "msg": ` + err1.Error() + `}`)
+		return
 	}
 	article.Createtime = time.Now().Unix()
-	ctx.JSON(iris.StatusOK, model.ArticleCreate(article))
+	ctx.JSON(model.ArticleCreate(article))
 }
 
 /**
@@ -91,13 +97,13 @@ func ArticleCreate(ctx *iris.Context) {
 * @apiSuccess {String} msg 消息
 * @apiPermission admin
  */
-func ArticlePage(ctx *iris.Context) {
-	cp := Tools.ParseInt(ctx.Param("cp"), 1)
-	mp := Tools.ParseInt(ctx.Param("mp"), 20)
-	nodeid := Tools.ParseInt(ctx.Param("nodeid"), 0)
-	kw := ctx.Param("kw")
+func ArticlePage(ctx iris.Context) {
+	cp := ctx.Params().GetIntDefault("cp", 1)
+	mp := ctx.Params().GetIntDefault("mp", 20)
+	nodeid := ctx.Params().GetIntDefault("nodeid", 0)
+	kw := ctx.Params().Get("kw")
 
-	ctx.JSON(iris.StatusOK, model.ArticlePage(kw, nodeid, cp, mp))
+	ctx.JSON(model.ArticlePage(kw, nodeid, cp, mp))
 }
 
 /**
@@ -112,10 +118,9 @@ func ArticlePage(ctx *iris.Context) {
 * @apiSuccess {String} msg 消息
 * @apiPermission admin
  */
-func ArticleDele(ctx *iris.Context) {
-	ids := ctx.Param("id")
-	ctx.JSON(iris.StatusOK, logic.ArticleDele(ids))
-
+func ArticleDele(ctx iris.Context) {
+	ids := ctx.Params().Get("id")
+	ctx.JSON(logic.ArticleDele(ids))
 }
 
 /**
@@ -131,9 +136,8 @@ func ArticleDele(ctx *iris.Context) {
 * @apiSuccess {String} msg 消息
 * @apiPermission admin
  */
-func ArticlePass(ctx *iris.Context) {
-	ids := ctx.Param("id")
-	pass := Tools.ParseInt(ctx.Param("pass"), 0)
-	ctx.JSON(iris.StatusOK, logic.ArticlePass(ids, pass))
-
+func ArticlePass(ctx iris.Context) {
+	ids := ctx.Params().Get("id")
+	pass := ctx.Params().GetIntDefault("pass", 0)
+	ctx.JSON(logic.ArticlePass(ids, pass))
 }

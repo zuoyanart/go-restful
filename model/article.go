@@ -1,7 +1,5 @@
 package model
 
-import ()
-
 type Article struct {
 	ID         int    `json:"id" gorm:"primary_key;AUTO_INCREMENT"`
 	Title      string `json:"title" sql:"type:varchar(50);default:''"`
