@@ -1,9 +1,10 @@
 package logic
 
 import (
+	"pizzaCmsApi/model"
+
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"rmApi/model"
 )
 
 /**
@@ -58,7 +59,7 @@ func UserGroupGet(id string) model.ApiJson {
 				Group: group,
 			}
 			model.UserGroupCreate(usergroup)
-      return model.ApiJson{State: true, Msg: usergroup}
+			return model.ApiJson{State: true, Msg: usergroup}
 		} else {
 			return model.ApiJson{State: false, Msg: err.Error()}
 		}

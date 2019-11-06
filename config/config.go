@@ -1,8 +1,10 @@
 package config
 
 import (
-	"github.com/BurntSushi/toml"
 	"sync"
+	
+	"github.com/BurntSushi/toml"
+
 )
 
 type Config struct {

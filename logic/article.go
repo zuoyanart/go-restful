@@ -1,8 +1,9 @@
 package logic
 
 import (
-	"pizzaCmsApi/model"
 	"strings"
+
+	"pizzaCmsApi/model"
 )
 
 /**
@@ -38,7 +39,8 @@ func ArticlePass(ids string, pass int) model.ApiJson {
 			idsInt[i] = Tools.ParseInt(id, 0)
 		}
 		return model.ArticlePass(idsInt, pass)
-	} else {
-		return model.ApiJson{State: false, Msg: "id is error"}
 	}
+
+	return model.ApiJson{State: false, Msg: "id is error"}
+
 }

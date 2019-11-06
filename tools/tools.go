@@ -171,7 +171,7 @@ func (t *Tools) SubString(str string, start, length int) string {
  * @return {[type]}   [description]
  */
 func (t *Tools) Base64Decode(str string) string {
-	s, err :=  base64.StdEncoding.DecodeString(str)
+	s, err := base64.StdEncoding.DecodeString(str)
 	if err != nil {
 		return ""
 	}

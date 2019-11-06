@@ -1,11 +1,12 @@
 package controller
 
 import (
-	// "encoding/json"
-	"github.com/kataras/iris"
+	"strings"
+
 	"pizzaCmsApi/logic"
 	"pizzaCmsApi/model"
-	"strings"
+
+	"github.com/kataras/iris/v12"
 )
 
 /**
@@ -19,9 +20,9 @@ import (
  * @apiSuccess {bool} state 状态
  * @apiSuccess {String} msg 消息内容
  */
-func UserAdminGet(ctx *iris.Context) {
-	id := Tools.ParseInt(ctx.Param("id"), 0)
-	ctx.JSON(iris.StatusOK, model.UserAdminGet(id))
+func UserAdminGet(ctx iris.Context) {
+	id := ctx.Params().GetIntDefault("id", 0)
+	ctx.JSON(model.UserAdminGet(id))
 }
 
 /**
@@ -36,15 +37,17 @@ func UserAdminGet(ctx *iris.Context) {
  * @apiSuccess {bool} state 状态
  * @apiSuccess {String} msg 用户信息
  */
-func UserAdminCheckLogin(ctx *iris.Context) {
-	username := ctx.Param("username")
-	password := ctx.Param("password")
+func UserAdminCheckLogin(ctx iris.Context) {
+	username := ctx.Params().Get("username")
+	password := ctx.Params().Get("password")
 	err1 := validate.Var(username, "required,min=4,max=20")
 	err2 := validate.Var(password, "required,min=6,max=20")
 	if err1 != nil || err2 != nil {
-		ctx.JSON(iris.StatusOK, errorValidate())
+		ctx.JSON(errorValidate())
+		return
 	}
-	ctx.JSON(iris.StatusOK, logic.UserAdminCheckLogin(username, password))
+
+	ctx.JSON(logic.UserAdminCheckLogin(username, password))
 }
 
 /**
@@ -58,9 +61,9 @@ func UserAdminCheckLogin(ctx *iris.Context) {
  * @apiSuccess {bool} state 状态
  * @apiSuccess {String} msg 消息
  */
-func UserAdminGetByPath(ctx *iris.Context) {
-	id := Tools.ParseInt(ctx.Param("id"), 0)
-	ctx.JSON(iris.StatusOK, model.UserAdminGet(id))
+func UserAdminGetByPath(ctx iris.Context) {
+	id := ctx.Params().GetIntDefault("id", 0)
+	ctx.JSON(model.UserAdminGet(id))
 }
 
 /**
@@ -78,19 +81,21 @@ func UserAdminGetByPath(ctx *iris.Context) {
 * @apiSuccess {String} msg 消息
 * @apiPermission admin
  */
-func UserAdminUpdate(ctx *iris.Context) {
+func UserAdminUpdate(ctx iris.Context) {
 	var user model.UserAdmin
 	err := ctx.ReadJSON(&user)
 	if err != nil {
-		ctx.JSON(iris.StatusOK, model.ApiJson{State: false, Msg: err.Error()})
-	} else {
-		err1 := validate.Struct(user)
-		if err1 != nil {
-			ctx.JSON(iris.StatusOK, model.ApiJson{State: false, Msg: err1.Error()})
-		}
-		ctx.JSON(iris.StatusOK, model.UserAdminUpdate(user))
+		ctx.JSON(model.ApiJson{State: false, Msg: err.Error()})
+		return
 	}
 
+	err1 := validate.Struct(user)
+	if err1 != nil {
+		ctx.JSON(model.ApiJson{State: false, Msg: err1.Error()})
+		return
+	}
+
+	ctx.JSON(model.UserAdminUpdate(user))
 }
 
 /**
@@ -105,17 +110,19 @@ func UserAdminUpdate(ctx *iris.Context) {
 * @apiSuccess {String} msg 消息
 * @apiPermission admin
  */
-func UserAdminCreate(ctx *iris.Context) {
+func UserAdminCreate(ctx iris.Context) {
 	var user model.UserAdmin
 	err := ctx.ReadJSON(&user)
 	if err != nil {
-		ctx.JSON(iris.StatusOK, model.ApiJson{State: false, Msg: err.Error()})
+		ctx.JSON(model.ApiJson{State: false, Msg: err.Error()})
+		return
 	}
 	err1 := validate.Struct(user)
 	if err1 != nil {
-		ctx.JSON(iris.StatusOK, `{"state": false, "msg": `+err1.Error()+`}`)
+		ctx.JSON(`{"state": false, "msg": ` + err1.Error() + `}`)
+		return
 	}
-	ctx.JSON(iris.StatusOK, model.UserAdminCreate(user))
+	ctx.JSON(model.UserAdminCreate(user))
 }
 
 /**
@@ -132,12 +139,12 @@ func UserAdminCreate(ctx *iris.Context) {
 * @apiSuccess {String} msg 消息
 * @apiPermission admin
  */
-func UserAdminPage(ctx *iris.Context) {
-	cp := Tools.ParseInt(ctx.Param("cp"), 1)
-	mp := Tools.ParseInt(ctx.Param("mp"), 20)
-	kw := ctx.Param("kw")
+func UserAdminPage(ctx iris.Context) {
+	cp := ctx.Params().GetIntDefault("cp", 1)
+	mp := ctx.Params().GetIntDefault("mp", 20)
+	kw := ctx.Params().Get("kw")
 
-	ctx.JSON(iris.StatusOK, model.UserAdminPage(kw, cp, mp))
+	ctx.JSON(model.UserAdminPage(kw, cp, mp))
 }
 
 /**
@@ -152,11 +159,11 @@ func UserAdminPage(ctx *iris.Context) {
 * @apiSuccess {String} msg 消息
 * @apiPermission admin
  */
-func UserAdminDele(ctx *iris.Context) {
-	ids := ctx.Param("id")
+func UserAdminDele(ctx iris.Context) {
+	ids := ctx.Params().Get("id")
 	if strings.Index(","+ids+",", ",1,") == -1 {
-		ctx.JSON(iris.StatusOK, logic.UserAdminDele(ids))
+		ctx.JSON(logic.UserAdminDele(ids))
 	} else {
-		ctx.JSON(iris.StatusOK, `{"state": false, "msg": "root is not del"}`)
+		ctx.JSON(`{"state": false, "msg": "root is not del"}`)
 	}
 }

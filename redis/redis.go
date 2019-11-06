@@ -2,9 +2,9 @@ package redis
 
 import (
 	"github.com/garyburd/redigo/redis"
+	"log"
 	"sync"
 	"time"
-	"log"
 )
 
 type Redis struct {
@@ -15,18 +15,19 @@ type Redis struct {
 }
 
 var (
-	r    *Redis
-	once sync.Once
-  redisClient *redis.Pool
+	r           *Redis
+	once        sync.Once
+	redisClient *redis.Pool
 )
+
 /**
  * 返回单例实例
  * @method New
  */
 func New(connect string, db int, maxidle int, maxactive int) *Redis {
 	once.Do(func() { //只执行一次
-		r = &Redis{Connect: connect, Db: db, Maxidle:maxidle, Maxactive:maxactive}
-    setPoll()
+		r = &Redis{Connect: connect, Db: db, Maxidle: maxidle, Maxactive: maxactive}
+		setPoll()
 	})
 	return r
 }
@@ -39,20 +40,20 @@ func New(connect string, db int, maxidle int, maxactive int) *Redis {
  * @method setPoll
  */
 func setPoll() {
-  redisClient = &redis.Pool{
-    MaxIdle: r.Maxidle,
-    MaxActive: r.Maxactive,
-    IdleTimeout: 180*time.Second,
-    Dial: func() (redis.Conn, error) {//建立连接
-				log.Printf(r.Connect)
-      c, err := redis.Dial("tcp", r.Connect)
-      if err != nil {
-        panic(err)
-      }
-      c.Do("SELECT", r.Db)
-      return c, nil
-    },
-  }
+	redisClient = &redis.Pool{
+		MaxIdle:     r.Maxidle,
+		MaxActive:   r.Maxactive,
+		IdleTimeout: 180 * time.Second,
+		Dial: func() (redis.Conn, error) { //建立连接
+			log.Printf(r.Connect)
+			c, err := redis.Dial("tcp", r.Connect)
+			if err != nil {
+				panic(err)
+			}
+			c.Do("SELECT", r.Db)
+			return c, nil
+		},
+	}
 }
 
 /**
@@ -78,6 +79,7 @@ func (n *Redis) SetString(key string, value string, ex string) (interface{}, err
 	defer conn.Close()
 	return conn.Do("SET", key, value, "EX", ex)
 }
+
 /**
  * 获取键的值
  * @method func
@@ -85,8 +87,8 @@ func (n *Redis) SetString(key string, value string, ex string) (interface{}, err
  * @return {[type]}   [description]
  */
 func (n *Redis) GetString(key string) (string, error) {
-  conn := redisClient.Get()
-  defer conn.Close()
+	conn := redisClient.Get()
+	defer conn.Close()
 	value, err := redis.String(conn.Do("GET", key))
-  return value, err
+	return value, err
 }
